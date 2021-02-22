@@ -1,9 +1,9 @@
 package com.javakaian.shooter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -21,8 +21,8 @@ import com.javakaian.network.messages.GetCurrentPlayersMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.shooter.input.PlayStateInput;
+import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Enemy;
-import com.javakaian.shooter.shapes.ManyShapes;
 import com.javakaian.shooter.shapes.Player;
 
 public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
@@ -31,10 +31,10 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	Texture img;
 	private OrthographicCamera camera;
 
-	private ManyShapes manyShapes;
-
 	private Player player;
 	private List<Enemy> enemyList;
+
+	private Set<Bullet> bulletSet;
 
 	private ShapeRenderer sr;
 
@@ -50,19 +50,20 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 		Gdx.input.setInputProcessor(new PlayStateInput(this));
 
-		manyShapes = new ManyShapes();
 		sr = new ShapeRenderer();
 
 		myclient = new OClient(this);
 
 		enemyList = new ArrayList<Enemy>();
-		player = new Player(50, 50, 50, UUID.randomUUID().toString().replaceAll("-", ""), myclient);
+		player = new Player(50, 50, 50, myclient);
 
 		LoginMessage m = new LoginMessage();
 		m.name = player.getName();
 		m.x = player.getX();
 		m.y = player.getY();
 		myclient.getClient().sendTCP(m);
+
+		bulletSet = new HashSet<Bullet>();
 
 	}
 
@@ -193,5 +194,15 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	@Override
 	public void removePlayer(String name) {
 		enemyList.stream().filter(e -> e.getName().equals(name)).findFirst().ifPresent(e -> enemyList.remove(e));
+	}
+
+	public void shoot() {
+		player.shoot();
+	}
+
+	@Override
+	public void shootMessage(String name) {
+
+		enemyList.stream().filter(e -> e.getName().equals(name)).findFirst().ifPresent(e -> e.shoot());
 	}
 }

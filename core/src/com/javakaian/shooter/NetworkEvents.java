@@ -13,4 +13,6 @@ public interface NetworkEvents {
 
 	public void removePlayer(String name);
 
+	public void shootMessage(String name);
+
 }

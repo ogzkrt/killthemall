@@ -2,6 +2,8 @@ package com.javakaian.network;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -9,6 +11,8 @@ import com.esotericsoftware.kryonet.Server;
 import com.javakaian.network.messages.GetCurrentPlayersMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.PositionMessage;
+import com.javakaian.network.messages.ShootMessage;
+import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Player;
 
 public class OServer {
@@ -16,10 +20,12 @@ public class OServer {
 	private Server server;
 
 	private HashMap<String, ServerPlayer> spList;
+	private Set<Bullet> bulletSet;
 
 	public OServer() {
 
 		spList = new HashMap<String, ServerPlayer>();
+		bulletSet = new HashSet<Bullet>();
 
 		server = new Server();
 
@@ -60,6 +66,12 @@ public class OServer {
 					spList.remove(pp.name);
 
 					server.sendToAllExceptTCP(connection.getID(), pp);
+
+				}
+				if (object instanceof ShootMessage) {
+
+					ShootMessage pp = (ShootMessage) object;
+					server.sendToAllExceptUDP(connection.getID(), pp);
 
 				}
 

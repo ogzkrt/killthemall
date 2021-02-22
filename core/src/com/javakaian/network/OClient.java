@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import com.javakaian.network.messages.GetCurrentPlayersMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.PositionMessage;
+import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.NetworkEvents;
 
 public class OClient {
@@ -53,6 +54,11 @@ public class OClient {
 					LogoutMessage pp = (LogoutMessage) object;
 					removePlayer(pp);
 				}
+				if (object instanceof ShootMessage) {
+
+					ShootMessage pp = (ShootMessage) object;
+					shootMessageRecieved(pp);
+				}
 
 			}
 
@@ -65,6 +71,10 @@ public class OClient {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void shootMessageRecieved(ShootMessage pp) {
+		game.shootMessage(pp.name);
 	}
 
 	public void removePlayer(LogoutMessage pp) {

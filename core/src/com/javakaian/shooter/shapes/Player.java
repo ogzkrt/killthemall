@@ -1,27 +1,36 @@
 package com.javakaian.shooter.shapes;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.javakaian.network.OClient;
 import com.javakaian.network.messages.PositionMessage;
+import com.javakaian.network.messages.ShootMessage;
 
 public class Player implements GameObject {
 
 	private float x, y, size;
 	private String name;
 	private OClient mc;
+	private Set<Bullet> bulletSet;
 
 	public Player() {
 	}
 
-	public Player(float x, float y, float size, String name, OClient mc) {
+	public Player(float x, float y, float size, OClient mc) {
 		this.x = x;
 		this.y = y;
 		this.size = size;
-		this.name = name;
+		this.name = UUID.randomUUID().toString().replaceAll("-", "");
 		this.mc = mc;
+
+		bulletSet = new HashSet<Bullet>();
 	}
 
 	@Override
@@ -30,6 +39,8 @@ public class Player implements GameObject {
 		sr.setColor(Color.GREEN);
 		sr.rect(x, y, size, size);
 		sr.setColor(Color.WHITE);
+
+		bulletSet.stream().forEach(b -> b.render(sr));
 	}
 
 	@Override
@@ -56,6 +67,10 @@ public class Player implements GameObject {
 			sendPosition(x, y);
 
 		}
+
+		bulletSet.stream().forEach(b -> b.update(deltaTime));
+		bulletSet = bulletSet.stream().filter(b -> b.getPosition().y < Gdx.graphics.getHeight())
+				.collect(Collectors.toSet());
 
 	}
 
@@ -86,5 +101,14 @@ public class Player implements GameObject {
 
 	public String getName() {
 		return name;
+	}
+
+	public void shoot() {
+		bulletSet.add(new Bullet(x + size / 2 - 5, y + size / 2 - 5, 10));
+
+		ShootMessage m = new ShootMessage();
+		m.name = name;
+		mc.getClient().sendUDP(m);
+
 	}
 }
