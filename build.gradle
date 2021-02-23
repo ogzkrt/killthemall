@@ -63,3 +63,18 @@ project(":core") {
         
     }
 }
+project(":server") {
+    apply plugin: "java-library"
+
+
+    dependencies {
+     	api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+     	api "com.badlogicgames.gdx:gdx-backend-headless:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile "com.esotericsoftware:kryonet:2.22.0-RC1"
+        
+    }
+}

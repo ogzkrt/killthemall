@@ -1,10 +1,6 @@
 package com.javakaian.shooter;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.HashMap;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -15,14 +11,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.javakaian.network.LogoutMessage;
 import com.javakaian.network.OClient;
-import com.javakaian.network.messages.GetCurrentPlayersMessage;
+import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
+import com.javakaian.network.messages.LogoutMessage;
 import com.javakaian.network.messages.PositionMessage;
+import com.javakaian.network.messages.PositionMessage.DIRECTION;
+import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.input.PlayStateInput;
-import com.javakaian.shooter.shapes.Bullet;
-import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
 
 public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
@@ -32,9 +28,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	private OrthographicCamera camera;
 
 	private Player player;
-	private List<Enemy> enemyList;
-
-	private Set<Bullet> bulletSet;
+	private HashMap<String, Player> playerSet;
 
 	private ShapeRenderer sr;
 
@@ -54,23 +48,20 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 		myclient = new OClient(this);
 
-		enemyList = new ArrayList<Enemy>();
-		player = new Player(50, 50, 50, myclient);
+		player = new Player(140, 50, 50);
 
 		LoginMessage m = new LoginMessage();
 		m.name = player.getName();
-		m.x = player.getX();
-		m.y = player.getY();
+		m.x = player.getPosition().x;
+		m.y = player.getPosition().y;
 		myclient.getClient().sendTCP(m);
 
-		bulletSet = new HashSet<Bullet>();
-
+		playerSet = new HashMap<String, Player>();
 	}
 
 	@Override
 	public void render() {
 
-		deneme();
 		batch.setProjectionMatrix(camera.combined);
 		sr.setProjectionMatrix(camera.combined);
 		camera.update();
@@ -80,22 +71,16 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		batch.draw(img, 0, 0);
 		batch.end();
 
-		sr.begin(ShapeType.Filled);
+		sr.begin(ShapeType.Line);
 		// manyShapes.render(sr);
 		// manyShapes.update(Gdx.graphics.getDeltaTime());
-
-		player.render(sr);
-		player.update(Gdx.graphics.getDeltaTime());
-
-		for (Enemy enemy : enemyList) {
-			enemy.render(sr);
-			enemy.update(Gdx.graphics.getDeltaTime());
-		}
+		playerSet.forEach((k, v) -> {
+			v.render(sr);
+		});
 
 		sr.end();
-		float lerp = 1;
-		camera.position.x += (player.getX() - camera.position.x) * lerp * Gdx.graphics.getDeltaTime();
-		camera.position.y += (player.getY() - camera.position.y) * lerp * Gdx.graphics.getDeltaTime();
+
+		processInputs();
 	}
 
 	@Override
@@ -107,6 +92,29 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 		batch.dispose();
 		img.dispose();
+	}
+
+	private void processInputs() {
+
+		PositionMessage p = new PositionMessage();
+		p.name = player.getName();
+
+		if (Gdx.input.isKeyPressed(Keys.W)) {
+			p.direction = DIRECTION.UP;
+			myclient.getClient().sendUDP(p);
+		}
+		if (Gdx.input.isKeyPressed(Keys.S)) {
+			p.direction = DIRECTION.DOWN;
+			myclient.getClient().sendUDP(p);
+		}
+		if (Gdx.input.isKeyPressed(Keys.A)) {
+			p.direction = DIRECTION.LEFT;
+			myclient.getClient().sendUDP(p);
+		}
+		if (Gdx.input.isKeyPressed(Keys.D)) {
+			p.direction = DIRECTION.RIGHT;
+			myclient.getClient().sendUDP(p);
+		}
 	}
 
 	public void scrolled(float amountY) {
@@ -122,87 +130,27 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 	}
 
-	private void deneme() {
-
-		int amount = 350;
-		if (Gdx.input.isKeyPressed(Keys.LEFT)) {
-			this.goLeft(amount);
-		}
-		if (Gdx.input.isKeyPressed(Keys.RIGHT)) {
-			this.goRight(amount);
-		}
-		if (Gdx.input.isKeyPressed(Keys.UP)) {
-			this.goUp(amount);
-		}
-		if (Gdx.input.isKeyPressed(Keys.DOWN)) {
-			this.goDown(amount);
-		}
-		if (Gdx.input.isKeyPressed(Keys.R)) {
-			camera.rotate(1);
-		}
-		if (Gdx.input.isKeyPressed(Keys.T)) {
-			camera.rotate(-1);
-		}
-
-	}
-
-	public void goLeft(float amount) {
-
-		camera.translate(-1 * Gdx.graphics.getDeltaTime() * amount * camera.zoom, 0);
-	}
-
-	public void goRight(float amount) {
-		camera.translate(1 * Gdx.graphics.getDeltaTime() * amount * camera.zoom, 0);
-	}
-
-	public void goUp(float amount) {
-		camera.translate(0, 1 * Gdx.graphics.getDeltaTime() * amount * camera.zoom);
-	}
-
-	public void goDown(float amount) {
-		camera.translate(0, -1 * Gdx.graphics.getDeltaTime() * amount * camera.zoom);
-	}
-
 	public void resetZoom() {
 		camera.zoom = 1;
 	}
 
 	@Override
 	public void addNewPlayer(float x, float y, String name) {
-		enemyList.add(new Enemy(x, y, name));
-	}
-
-	@Override
-	public void updatePoisiton(PositionMessage pm) {
-		enemyList.stream().filter(e -> e.getName().equals(pm.name)).findFirst().ifPresent((e) -> {
-			e.setX(pm.x);
-			e.setY(pm.y);
-		});
-
-	}
-
-	@Override
-	public void updateCurrentPlayers(GetCurrentPlayersMessage gcp) {
-		Set<String> enemySet = enemyList.stream().map(e -> e.getName()).collect(Collectors.toSet());
-		gcp.spList.forEach((k, v) -> {
-			if (!enemySet.contains(k)) {
-				enemyList.add(new Enemy(v.getX(), v.getY(), v.getName()));
-			}
-		});
 	}
 
 	@Override
 	public void removePlayer(String name) {
-		enemyList.stream().filter(e -> e.getName().equals(name)).findFirst().ifPresent(e -> enemyList.remove(e));
-	}
-
-	public void shoot() {
-		player.shoot();
 	}
 
 	@Override
-	public void shootMessage(String name) {
-
-		enemyList.stream().filter(e -> e.getName().equals(name)).findFirst().ifPresent(e -> e.shoot());
+	public void gwmReceived(GameWorldMessage gwm) {
+		this.playerSet = gwm.players;
 	}
+
+	public void shoot() {
+		ShootMessage m = new ShootMessage();
+		m.name = player.getName();
+		myclient.getClient().sendUDP(m);
+	}
+
 }

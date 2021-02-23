@@ -28,8 +28,8 @@ public class PlayStateInput extends InputAdapter {
 
 		switch (keycode) {
 		case Keys.SPACE:
-			game.shoot();
 			// game.resetZoom();
+			game.shoot();
 			break;
 
 		default:

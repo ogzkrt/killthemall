@@ -3,9 +3,8 @@ package com.javakaian.shooter.shapes;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 public class Player {
@@ -26,13 +25,11 @@ public class Player {
 		bulletSet = new HashSet<Bullet>();
 	}
 
-	public void render(ShapeRenderer sr) {
-		// TODO Auto-generated method stub
-		sr.setColor(Color.GREEN);
-		sr.rect(position.x, position.y, size, size);
-		sr.setColor(Color.WHITE);
+	public void update(float deltaTime) {
 
-		bulletSet.stream().forEach(b -> b.render(sr));
+		bulletSet.stream().forEach(b -> b.update(deltaTime));
+		bulletSet = bulletSet.stream().filter(b -> b.getPosition().y < 500).collect(Collectors.toSet());
+
 	}
 
 	public void setPosition(Vector2 position) {
@@ -50,4 +47,5 @@ public class Player {
 	public Set<Bullet> getBulletSet() {
 		return bulletSet;
 	}
+
 }

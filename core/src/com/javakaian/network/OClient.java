@@ -6,10 +6,9 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
-import com.javakaian.network.messages.GetCurrentPlayersMessage;
+import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
-import com.javakaian.network.messages.PositionMessage;
-import com.javakaian.network.messages.ShootMessage;
+import com.javakaian.network.messages.LogoutMessage;
 import com.javakaian.shooter.NetworkEvents;
 
 public class OClient {
@@ -37,27 +36,15 @@ public class OClient {
 					addNew(newPlayer.x, newPlayer.y, newPlayer.name);
 
 				}
-				if (object instanceof PositionMessage) {
-
-					PositionMessage pp = (PositionMessage) object;
-					updatePosition(pp);
-				}
-				if (object instanceof GetCurrentPlayersMessage) {
-
-					GetCurrentPlayersMessage pp = (GetCurrentPlayersMessage) object;
-					updateCurrentPlayers(pp);
-					pp.spList.forEach((k, v) -> System.out.println(k));
-					System.out.println("SEND CURRENT PLAYERS RECIEVED..");
-				}
 				if (object instanceof LogoutMessage) {
 
 					LogoutMessage pp = (LogoutMessage) object;
 					removePlayer(pp);
 				}
-				if (object instanceof ShootMessage) {
+				if (object instanceof GameWorldMessage) {
 
-					ShootMessage pp = (ShootMessage) object;
-					shootMessageRecieved(pp);
+					GameWorldMessage gwm = (GameWorldMessage) object;
+					gwmReceived(gwm);
 				}
 
 			}
@@ -73,8 +60,8 @@ public class OClient {
 
 	}
 
-	public void shootMessageRecieved(ShootMessage pp) {
-		game.shootMessage(pp.name);
+	public void gwmReceived(GameWorldMessage gwm) {
+		game.gwmReceived(gwm);
 	}
 
 	public void removePlayer(LogoutMessage pp) {
@@ -83,15 +70,6 @@ public class OClient {
 
 	public void addNew(float x, float y, String name) {
 		game.addNewPlayer(x, y, name);
-	}
-
-	public void updatePosition(PositionMessage pp) {
-
-		game.updatePoisiton(pp);
-	}
-
-	public void updateCurrentPlayers(GetCurrentPlayersMessage gcp) {
-		game.updateCurrentPlayers(gcp);
 	}
 
 	public Client getClient() {

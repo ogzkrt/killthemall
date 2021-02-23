@@ -5,9 +5,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-public class Enemy implements GameObject {
+public class Enemy {
 
 	private float x, y, size;
 	private String name;
@@ -28,15 +27,6 @@ public class Enemy implements GameObject {
 
 	}
 
-	@Override
-	public void render(ShapeRenderer sr) {
-
-		sr.rect(x, y, 50, 50);
-
-		bulletSet.forEach(b -> b.render(sr));
-	}
-
-	@Override
 	public void update(float deltaTime) {
 		bulletSet.forEach(b -> b.update(deltaTime));
 		bulletSet = bulletSet.stream().filter(b -> b.getPosition().y < Gdx.graphics.getHeight())

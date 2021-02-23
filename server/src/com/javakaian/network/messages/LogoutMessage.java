@@ -1,6 +1,7 @@
-package com.javakaian.network;
+package com.javakaian.network.messages;
 
 public class LogoutMessage {
 
 	public String name;
+
 }

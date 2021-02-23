@@ -2,7 +2,6 @@ package com.javakaian.shooter.shapes;
 
 import java.util.UUID;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 public class Bullet {
@@ -15,14 +14,15 @@ public class Bullet {
 	}
 
 	public Bullet(float x, float y, float size) {
-		super();
 		this.position = new Vector2(x, y);
 		this.size = size;
 		this.name = UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
-	public void render(ShapeRenderer sr) {
-		sr.rect(position.x, position.y, size, size);
+	public void update(float deltaTime) {
+
+		float speed = deltaTime * 400;
+		position.y += speed;
 	}
 
 	public Vector2 getPosition() {
