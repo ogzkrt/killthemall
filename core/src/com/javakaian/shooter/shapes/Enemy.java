@@ -2,6 +2,9 @@ package com.javakaian.shooter.shapes;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+
 public class Enemy {
 
 	private float x, y, size;
@@ -19,8 +22,11 @@ public class Enemy {
 
 	}
 
-	public void update(float deltaTime) {
+	public void render(ShapeRenderer sr) {
 
+		sr.setColor(Color.CYAN);
+		sr.circle(x, y, size);
+		sr.setColor(Color.WHITE);
 	}
 
 	public void setX(float x) {

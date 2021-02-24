@@ -2,7 +2,6 @@ package com.javakaian.shooter.shapes;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.badlogic.gdx.math.Vector2;
@@ -17,10 +16,10 @@ public class Player {
 	public Player() {
 	}
 
-	public Player(float x, float y, float size) {
+	public Player(float x, float y, float size, String name) {
 		this.position = new Vector2(x, y);
 		this.size = size;
-		this.name = UUID.randomUUID().toString().replaceAll("-", "");
+		this.name = name;
 
 		bulletSet = new HashSet<Bullet>();
 	}
@@ -28,7 +27,15 @@ public class Player {
 	public void update(float deltaTime) {
 
 		bulletSet.stream().forEach(b -> b.update(deltaTime));
-		bulletSet = bulletSet.stream().filter(b -> b.getPosition().y < 500).collect(Collectors.toSet());
+
+	}
+
+	public void checkForCollisiion() {
+		bulletSet = bulletSet.stream().filter(b -> b.getPosition().y > 0).collect(Collectors.toSet());
+
+	}
+
+	public void checkEnemy() {
 
 	}
 

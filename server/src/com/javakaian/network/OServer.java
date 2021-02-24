@@ -23,7 +23,7 @@ public class OServer {
 	public OServer(ClientMessageObserver cmo) {
 
 		this.cmo = cmo;
-		server = new Server();
+		server = new Server(32768, 4096);
 
 		ONetwork.register(server);
 

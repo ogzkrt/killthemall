@@ -12,6 +12,7 @@ import com.javakaian.network.messages.LogoutMessage;
 import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.shapes.Bullet;
+import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
 
 public class ONetwork {
@@ -29,11 +30,13 @@ public class ONetwork {
 		kryo.register(PositionMessage.class);
 		kryo.register(PositionMessage.DIRECTION.class);
 		kryo.register(ShootMessage.class);
+		kryo.register(Enemy.class);
 		// objects
 		kryo.register(java.util.HashSet.class);
 		kryo.register(Vector2.class);
 		kryo.register(HashMap.class);
 		kryo.register(Set.class);
+
 	}
 
 }

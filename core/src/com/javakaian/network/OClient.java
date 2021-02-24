@@ -20,7 +20,7 @@ public class OClient {
 
 		this.game = game;
 
-		client = new Client();
+		client = new Client(16384, 4096);
 		client.start();
 
 		ONetwork.register(client);

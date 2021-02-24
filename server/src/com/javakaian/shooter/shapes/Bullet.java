@@ -9,20 +9,27 @@ public class Bullet {
 	private Vector2 position;
 	private float size;
 	private String name;
+	private float angle;
 
 	public Bullet() {
 	}
 
-	public Bullet(float x, float y, float size) {
+	public Bullet(float x, float y, float size, float angle) {
 		this.position = new Vector2(x, y);
 		this.size = size;
+		this.angle = angle;
 		this.name = UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
 	public void update(float deltaTime) {
 
-		float speed = deltaTime * 400;
-		position.y += speed;
+		float speed = deltaTime * 500;
+
+		float dx = (float) Math.cos(angle);
+		float dy = (float) Math.sin(angle);
+
+		position.y -= speed * dy;
+		position.x += speed * dx;
 	}
 
 	public Vector2 getPosition() {

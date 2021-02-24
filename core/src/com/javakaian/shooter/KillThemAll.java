@@ -4,12 +4,15 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.javakaian.network.OClient;
 import com.javakaian.network.messages.GameWorldMessage;
@@ -19,6 +22,7 @@ import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.network.messages.PositionMessage.DIRECTION;
 import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.input.PlayStateInput;
+import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
 
 public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
@@ -29,10 +33,13 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 	private Player player;
 	private HashMap<String, Player> playerSet;
+	private HashMap<String, Enemy> enemies;
 
 	private ShapeRenderer sr;
 
 	private OClient myclient;
+
+	private float angle = 90;
 
 	@Override
 	public void create() {
@@ -40,7 +47,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		img = new Texture("badlogic.jpg");
 
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 		Gdx.input.setInputProcessor(new PlayStateInput(this));
 
@@ -57,6 +64,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		myclient.getClient().sendTCP(m);
 
 		playerSet = new HashMap<String, Player>();
+		enemies = new HashMap<String, Enemy>();
 	}
 
 	@Override
@@ -77,10 +85,33 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		playerSet.forEach((k, v) -> {
 			v.render(sr);
 		});
+		enemies.forEach((k, v) -> {
+			v.render(sr);
+		});
+
+		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
+
+			Vector3 up = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+			Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
+			Vector2 mouse = new Vector2(up.x, up.y);
+
+			angle = (float) (mouse.sub(pos).angleRad());
+			System.out.println("Angle: " + mouse.sub(pos).angleDeg());
+			int r = 20;
+			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
+
+		} else {
+			angle = 90f;
+		}
 
 		sr.end();
 
 		processInputs();
+
+		float lerp = 0.05f;
+
+		camera.position.x += (player.getPosition().x - camera.position.x) * lerp;
+		camera.position.y += (player.getPosition().y - camera.position.y) * lerp;
 	}
 
 	@Override
@@ -115,6 +146,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 			p.direction = DIRECTION.RIGHT;
 			myclient.getClient().sendUDP(p);
 		}
+
 	}
 
 	public void scrolled(float amountY) {
@@ -145,11 +177,17 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	@Override
 	public void gwmReceived(GameWorldMessage gwm) {
 		this.playerSet = gwm.players;
+		this.enemies = gwm.enemies;
+
+		Player p = playerSet.get(player.getName());
+		if (p != null)
+			this.player = p;
 	}
 
 	public void shoot() {
 		ShootMessage m = new ShootMessage();
 		m.name = player.getName();
+		m.angleDeg = angle;
 		myclient.getClient().sendUDP(m);
 	}
 

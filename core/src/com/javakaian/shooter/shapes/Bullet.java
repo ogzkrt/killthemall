@@ -10,14 +10,15 @@ public class Bullet {
 	private Vector2 position;
 	private float size;
 	private String name;
+	private float angle;
 
 	public Bullet() {
 	}
 
-	public Bullet(float x, float y, float size) {
-		super();
+	public Bullet(float x, float y, float size, float angle) {
 		this.position = new Vector2(x, y);
 		this.size = size;
+		this.angle = angle;
 		this.name = UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
