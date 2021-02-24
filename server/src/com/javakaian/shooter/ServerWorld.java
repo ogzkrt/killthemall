@@ -112,7 +112,7 @@ public class ServerWorld implements ClientMessageObserver {
 	@Override
 	public void shootMessageReceived(ShootMessage pp) {
 		Player p = players.get(pp.name);
-		p.getBulletSet().add(new Bullet(p.getPosition().x, p.getPosition().y, 10, pp.angleDeg));
+		p.getBulletSet().add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
 		System.out.println("shoot message recieved X: " + p.getPosition().x + " Y: " + p.getPosition().y);
 		players.remove(pp.name);
 		players.put(pp.name, p);

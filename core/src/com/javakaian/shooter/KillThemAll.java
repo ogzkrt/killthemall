@@ -95,8 +95,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 			Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
 			Vector2 mouse = new Vector2(up.x, up.y);
 
-			angle = (float) (mouse.sub(pos).angleRad());
-			System.out.println("Angle: " + mouse.sub(pos).angleDeg());
+			angle = (float) (8 * Math.PI / 4 - mouse.sub(pos).angleRad());
 			int r = 20;
 			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
 

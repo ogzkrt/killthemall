@@ -31,7 +31,7 @@ public class Player {
 	}
 
 	public void checkForCollisiion() {
-		bulletSet = bulletSet.stream().filter(b -> b.getPosition().y > 0).collect(Collectors.toSet());
+		bulletSet = bulletSet.stream().filter(b -> b.getPosition().dst(position) < 500).collect(Collectors.toSet());
 
 	}
 
