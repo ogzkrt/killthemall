@@ -88,19 +88,15 @@ public class ServerWorld implements ClientMessageObserver {
 		switch (move.direction) {
 		case LEFT:
 			v.x -= deltaTime * 200;
-			p.setPosition(v);
 			break;
 		case RIGHT:
 			v.x += deltaTime * 200;
-			p.setPosition(v);
 			break;
 		case UP:
 			v.y -= deltaTime * 200;
-			p.setPosition(v);
 			break;
 		case DOWN:
 			v.y += deltaTime * 200;
-			p.setPosition(v);
 			break;
 
 		default:
