@@ -6,6 +6,7 @@ public class Enemy {
 
 	private float x, y, size;
 	private String name;
+	private boolean visible = true;
 
 	public Enemy() {
 		// TODO Auto-generated constructor stub
@@ -37,6 +38,22 @@ public class Enemy {
 
 	public String getName() {
 		return name;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 }

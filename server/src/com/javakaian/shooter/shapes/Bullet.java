@@ -10,6 +10,7 @@ public class Bullet {
 	private float size;
 	private String name;
 	private float angle;
+	private boolean visible = true;
 
 	public Bullet() {
 	}
@@ -54,6 +55,14 @@ public class Bullet {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 }

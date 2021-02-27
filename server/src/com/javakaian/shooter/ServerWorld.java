@@ -1,8 +1,12 @@
 package com.javakaian.shooter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.javakaian.network.OServer;
 import com.javakaian.network.messages.GameWorldMessage;
@@ -17,7 +21,7 @@ import com.javakaian.shooter.shapes.Player;
 public class ServerWorld implements ClientMessageObserver {
 
 	private HashMap<String, Player> players;
-	private HashMap<String, Enemy> enemies;
+	private Set<Enemy> enemies;
 
 	private OServer oServer;
 
@@ -29,7 +33,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 		this.oServer = new OServer(this);
 		this.players = new HashMap<String, Player>();
-		this.enemies = new HashMap<String, Enemy>();
+		this.enemies = new HashSet<Enemy>();
 	}
 
 	public void update(float deltaTime) {
@@ -46,10 +50,8 @@ public class ServerWorld implements ClientMessageObserver {
 			v.checkForCollisiion();
 		});
 
-		enemies.forEach((k, e) -> {
-			e.update(deltaTime);
-		});
-
+		enemies.stream().forEach(e -> e.update(deltaTime));
+		enemies = enemies.stream().filter(e -> e.isVisible()).collect(Collectors.toSet());
 		gwm.players = players;
 		gwm.enemies = enemies;
 
@@ -59,10 +61,32 @@ public class ServerWorld implements ClientMessageObserver {
 			enemyTime = 0;
 
 			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);
-			enemies.put(e.getName(), e);
+			enemies.add(e);
 			System.out.println("Enemie Size: " + enemies.size());
 		}
 
+		checkCollision();
+
+	}
+
+	private void checkCollision() {
+		players.forEach((k, p) -> {
+			p.getBulletSet().stream().filter(b -> b.isVisible()).forEach(b -> {
+
+				Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
+
+				enemies.stream().forEach(e -> {
+
+					Rectangle re = new Rectangle(e.getX(), e.getY(), 10, 10);
+
+					if (rb.overlaps(re)) {
+						b.setVisible(false);
+						e.setVisible(false);
+					}
+				});
+
+			});
+		});
 	}
 
 	@Override

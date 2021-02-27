@@ -1,6 +1,8 @@
 package com.javakaian.shooter;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -33,7 +35,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 	private Player player;
 	private HashMap<String, Player> playerSet;
-	private HashMap<String, Enemy> enemies;
+	private Set<Enemy> enemies;
 
 	private ShapeRenderer sr;
 
@@ -64,7 +66,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		myclient.getClient().sendTCP(m);
 
 		playerSet = new HashMap<String, Player>();
-		enemies = new HashMap<String, Enemy>();
+		enemies = new HashSet<Enemy>();
 	}
 
 	@Override
@@ -85,9 +87,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		playerSet.forEach((k, v) -> {
 			v.render(sr);
 		});
-		enemies.forEach((k, v) -> {
-			v.render(sr);
-		});
+		enemies.stream().forEach(e -> e.render(sr));
 
 		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
 

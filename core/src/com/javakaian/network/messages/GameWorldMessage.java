@@ -1,6 +1,7 @@
 package com.javakaian.network.messages;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
@@ -8,6 +9,6 @@ import com.javakaian.shooter.shapes.Player;
 public class GameWorldMessage {
 
 	public HashMap<String, Player> players;
-	public HashMap<String, Enemy> enemies;
+	public Set<Enemy> enemies;
 
 }
