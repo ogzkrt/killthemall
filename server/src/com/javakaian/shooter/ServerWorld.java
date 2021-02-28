@@ -1,9 +1,9 @@
 package com.javakaian.shooter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.badlogic.gdx.math.Rectangle;
@@ -21,7 +21,7 @@ import com.javakaian.shooter.shapes.Player;
 public class ServerWorld implements ClientMessageObserver {
 
 	private HashMap<String, Player> players;
-	private Set<Enemy> enemies;
+	private List<Enemy> enemies;
 
 	private OServer oServer;
 
@@ -33,7 +33,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 		this.oServer = new OServer(this);
 		this.players = new HashMap<String, Player>();
-		this.enemies = new HashSet<Enemy>();
+		this.enemies = new ArrayList<Enemy>();
 	}
 
 	public void update(float deltaTime) {
@@ -51,13 +51,20 @@ public class ServerWorld implements ClientMessageObserver {
 		});
 
 		enemies.stream().forEach(e -> e.update(deltaTime));
-		enemies = enemies.stream().filter(e -> e.isVisible()).collect(Collectors.toSet());
+		enemies = enemies.stream().filter(e -> e.isVisible()).collect(Collectors.toList());
 		gwm.players = players;
-		gwm.enemies = enemies;
+
+		int[] coordinates = new int[enemies.size() * 2];
+
+		for (int i = 0; i < enemies.size(); i++) {
+			coordinates[i * 2] = (int) enemies.get(i).getX();
+			coordinates[i * 2 + 1] = (int) enemies.get(i).getY();
+		}
+		gwm.enemies = coordinates;
 
 		oServer.getServer().sendToAllUDP(gwm);
 
-		if (enemyTime >= 5) {
+		if (enemyTime >= 0.4) {
 			enemyTime = 0;
 
 			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);

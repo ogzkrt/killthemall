@@ -1,8 +1,8 @@
 package com.javakaian.shooter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -35,7 +35,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 	private Player player;
 	private HashMap<String, Player> playerSet;
-	private Set<Enemy> enemies;
+	private List<Enemy> enemies;
 
 	private ShapeRenderer sr;
 
@@ -66,7 +66,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		myclient.getClient().sendTCP(m);
 
 		playerSet = new HashMap<String, Player>();
-		enemies = new HashSet<Enemy>();
+		enemies = new ArrayList<Enemy>();
 	}
 
 	@Override
@@ -176,7 +176,17 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	@Override
 	public void gwmReceived(GameWorldMessage gwm) {
 		this.playerSet = gwm.players;
-		this.enemies = gwm.enemies;
+
+		int[] temp = gwm.enemies;
+
+		List<Enemy> elist = new ArrayList<Enemy>();
+		for (int i = 0; i < temp.length / 2; i++) {
+			Enemy e = new Enemy(temp[i * 2], temp[i * 2 + 1], 10);
+			elist.add(e);
+
+		}
+
+		this.enemies = elist;
 
 		Player p = playerSet.get(player.getName());
 		if (p != null)
