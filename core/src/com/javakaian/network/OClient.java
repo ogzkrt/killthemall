@@ -33,7 +33,7 @@ public class OClient {
 				if (object instanceof LoginMessage) {
 
 					LoginMessage newPlayer = (LoginMessage) object;
-					addNew(newPlayer.x, newPlayer.y, newPlayer.name);
+					addNew(newPlayer.x, newPlayer.y, newPlayer.id);
 
 				}
 				if (object instanceof LogoutMessage) {
@@ -65,11 +65,11 @@ public class OClient {
 	}
 
 	public void removePlayer(LogoutMessage pp) {
-		game.removePlayer(pp.name);
+		game.removePlayer(pp.id);
 	}
 
-	public void addNew(float x, float y, String name) {
-		game.addNewPlayer(x, y, name);
+	public void addNew(float x, float y, int id) {
+		game.addNewPlayer(x, y, id);
 	}
 
 	public Client getClient() {

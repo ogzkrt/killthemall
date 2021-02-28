@@ -2,7 +2,6 @@ package com.javakaian.shooter.shapes;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -12,7 +11,7 @@ public class Player {
 
 	private float size;
 	private Vector2 position;
-	private String name;
+	private int id = -1;
 	private Set<Bullet> bulletSet;
 
 	public Player() {
@@ -21,7 +20,6 @@ public class Player {
 	public Player(float x, float y, float size) {
 		this.position = new Vector2(x, y);
 		this.size = size;
-		this.name = UUID.randomUUID().toString().replaceAll("-", "");
 
 		bulletSet = new HashSet<Bullet>();
 	}
@@ -43,8 +41,12 @@ public class Player {
 		return position;
 	}
 
-	public String getName() {
-		return name;
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public Set<Bullet> getBulletSet() {

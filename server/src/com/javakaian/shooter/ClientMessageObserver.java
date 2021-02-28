@@ -1,5 +1,6 @@
 package com.javakaian.shooter;
 
+import com.esotericsoftware.kryonet.Connection;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.LogoutMessage;
 import com.javakaian.network.messages.PositionMessage;
@@ -17,7 +18,7 @@ public interface ClientMessageObserver {
 	/**
 	 * PlayerID, and location should be received.
 	 */
-	public void loginReceived(LoginMessage m);
+	public void loginReceived(Connection con, LoginMessage m);
 
 	/**
 	 * PlayerID should be received.

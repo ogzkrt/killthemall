@@ -1,7 +1,6 @@
 package com.javakaian.shooter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -34,7 +33,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	private OrthographicCamera camera;
 
 	private Player player;
-	private HashMap<String, Player> playerSet;
+	private List<Player> playerSet;
 	private List<Enemy> enemies;
 
 	private ShapeRenderer sr;
@@ -60,12 +59,11 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		player = new Player(140, 50, 50);
 
 		LoginMessage m = new LoginMessage();
-		m.name = player.getName();
 		m.x = player.getPosition().x;
 		m.y = player.getPosition().y;
 		myclient.getClient().sendTCP(m);
 
-		playerSet = new HashMap<String, Player>();
+		playerSet = new ArrayList<Player>();
 		enemies = new ArrayList<Enemy>();
 	}
 
@@ -84,8 +82,10 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		sr.begin(ShapeType.Line);
 		// manyShapes.render(sr);
 		// manyShapes.update(Gdx.graphics.getDeltaTime());
-		playerSet.forEach((k, v) -> {
-			v.render(sr);
+
+		player.render(sr);
+		playerSet.forEach(p -> {
+			p.render(sr);
 		});
 		enemies.stream().forEach(e -> e.render(sr));
 
@@ -100,7 +100,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
 
 		} else {
-			angle = 90f;
+			angle = (float) (Math.PI / 2);
 		}
 
 		sr.end();
@@ -117,7 +117,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	public void dispose() {
 
 		LogoutMessage m = new LogoutMessage();
-		m.name = player.getName();
+		m.id = player.getId();
 		myclient.getClient().sendTCP(m);
 
 		batch.dispose();
@@ -127,7 +127,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	private void processInputs() {
 
 		PositionMessage p = new PositionMessage();
-		p.name = player.getName();
+		p.id = player.getId();
 
 		if (Gdx.input.isKeyPressed(Keys.W)) {
 			p.direction = DIRECTION.UP;
@@ -166,16 +166,20 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	}
 
 	@Override
-	public void addNewPlayer(float x, float y, String name) {
+	public void addNewPlayer(float x, float y, int id) {
+		this.player = new Player(x, y, 50);
+		this.player.setId(id);
 	}
 
 	@Override
-	public void removePlayer(String name) {
+	public void removePlayer(int id) {
 	}
 
 	@Override
 	public void gwmReceived(GameWorldMessage gwm) {
-		this.playerSet = gwm.players;
+
+		if (this.player.getId() == -1)
+			return;
 
 		int[] temp = gwm.enemies;
 
@@ -188,14 +192,30 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 		this.enemies = elist;
 
-		Player p = playerSet.get(player.getName());
-		if (p != null)
-			this.player = p;
+		int[] tp = gwm.players;
+		List<Player> plist = new ArrayList<Player>();
+		for (int i = 0; i < tp.length / 3; i++) {
+
+			int x = tp[i * 3];
+			int y = tp[i * 3 + 1];
+			int id = tp[i * 3 + 2];
+			Player p = new Player(x, y, 50);
+			p.setId(id);
+
+			if (player.getId() != -1 && (id == player.getId())) {
+				player = p;
+			} else {
+				plist.add(p);
+			}
+
+		}
+		this.playerSet = plist;
+
 	}
 
 	public void shoot() {
 		ShootMessage m = new ShootMessage();
-		m.name = player.getName();
+		m.id = player.getId();
 		m.angleDeg = angle;
 		myclient.getClient().sendUDP(m);
 	}

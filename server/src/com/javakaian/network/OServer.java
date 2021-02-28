@@ -35,7 +35,7 @@ public class OServer {
 				if (object instanceof LoginMessage) {
 
 					LoginMessage l = (LoginMessage) object;
-					cmo.loginReceived(l);
+					cmo.loginReceived(connection, l);
 				} else if (object instanceof PositionMessage) {
 
 					PositionMessage move = (PositionMessage) object;

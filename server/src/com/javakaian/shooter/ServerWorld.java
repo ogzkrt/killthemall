@@ -1,13 +1,13 @@
 package com.javakaian.shooter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.esotericsoftware.kryonet.Connection;
 import com.javakaian.network.OServer;
 import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
@@ -20,7 +20,7 @@ import com.javakaian.shooter.shapes.Player;
 
 public class ServerWorld implements ClientMessageObserver {
 
-	private HashMap<String, Player> players;
+	private List<Player> players;
 	private List<Enemy> enemies;
 
 	private OServer oServer;
@@ -29,10 +29,12 @@ public class ServerWorld implements ClientMessageObserver {
 
 	private float enemyTime = 0f;
 
+	private int idCounter = 0;
+
 	public ServerWorld() {
 
 		this.oServer = new OServer(this);
-		this.players = new HashMap<String, Player>();
+		this.players = new ArrayList<Player>();
 		this.enemies = new ArrayList<Enemy>();
 	}
 
@@ -43,16 +45,15 @@ public class ServerWorld implements ClientMessageObserver {
 
 		GameWorldMessage gwm = new GameWorldMessage();
 
-		players.forEach((k, v) -> {
-			v.update(deltaTime);
+		players.forEach(p -> {
+			p.update(deltaTime);
 		});
-		players.forEach((k, v) -> {
-			v.checkForCollisiion();
+		players.forEach(p -> {
+			p.checkForCollisiion();
 		});
 
 		enemies.stream().forEach(e -> e.update(deltaTime));
 		enemies = enemies.stream().filter(e -> e.isVisible()).collect(Collectors.toList());
-		gwm.players = players;
 
 		int[] coordinates = new int[enemies.size() * 2];
 
@@ -60,7 +61,18 @@ public class ServerWorld implements ClientMessageObserver {
 			coordinates[i * 2] = (int) enemies.get(i).getX();
 			coordinates[i * 2 + 1] = (int) enemies.get(i).getY();
 		}
+
 		gwm.enemies = coordinates;
+
+		int[] pcord = new int[players.size() * 3];
+		for (int i = 0; i < players.size(); i++) {
+
+			pcord[i * 3] = (int) players.get(i).getPosition().x;
+			pcord[i * 3 + 1] = (int) players.get(i).getPosition().y;
+			pcord[i * 3 + 2] = (int) players.get(i).getId();
+		}
+
+		gwm.players = pcord;
 
 		oServer.getServer().sendToAllUDP(gwm);
 
@@ -77,7 +89,7 @@ public class ServerWorld implements ClientMessageObserver {
 	}
 
 	private void checkCollision() {
-		players.forEach((k, p) -> {
+		players.forEach(p -> {
 			p.getBulletSet().stream().filter(b -> b.isVisible()).forEach(b -> {
 
 				Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
@@ -97,25 +109,34 @@ public class ServerWorld implements ClientMessageObserver {
 	}
 
 	@Override
-	public void loginReceived(LoginMessage m) {
+	public void loginReceived(Connection con, LoginMessage m) {
 
-		players.put(m.name, new Player(m.x, m.y, 50, m.name));
-		System.out.println("Login Message recieved from : " + m.name);
+		players.add(new Player(m.x, m.y, 50, idCounter));
+		System.out.println("Login Message recieved from : " + idCounter);
+		m.id = idCounter;
+		idCounter++;
+		oServer.getServer().sendToUDP(con.getID(), m);
 	}
 
 	@Override
 	public void logoutReceived(LogoutMessage m) {
 
-		players.remove(m.name);
-		System.out.println("Logout Message recieved from : " + m.name + " Size: " + players.size());
+		players.stream().filter(p -> p.getId() == m.id).findFirst().ifPresent(p -> players.remove(p));
+		System.out.println("Logout Message recieved from : " + m.id + " Size: " + players.size());
 
 	}
 
 	@Override
 	public void playerMovedReceived(PositionMessage move) {
 
-		Player p = players.get(move.name);
-		Vector2 v = p.getPosition();
+		Player player = null;
+
+		for (Player p : players) {
+			if (p.getId() == move.id)
+				player = p;
+		}
+
+		Vector2 v = player.getPosition();
 		switch (move.direction) {
 		case LEFT:
 			v.x -= deltaTime * 200;
@@ -138,11 +159,11 @@ public class ServerWorld implements ClientMessageObserver {
 
 	@Override
 	public void shootMessageReceived(ShootMessage pp) {
-		Player p = players.get(pp.name);
-		p.getBulletSet().add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
-		System.out.println("shoot message recieved X: " + p.getPosition().x + " Y: " + p.getPosition().y);
-		players.remove(pp.name);
-		players.put(pp.name, p);
+		players.stream().filter(p -> p.getId() == pp.id).findFirst().ifPresent(p -> {
+			p.getBulletSet().add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
+			System.out.println("shoot message recieved X: " + p.getPosition().x + " Y: " + p.getPosition().y);
+		});
+
 	}
 
 }

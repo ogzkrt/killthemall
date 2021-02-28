@@ -10,16 +10,16 @@ public class Player {
 
 	private float size;
 	private Vector2 position;
-	private String name;
+	private int id;
 	private Set<Bullet> bulletSet;
 
 	public Player() {
 	}
 
-	public Player(float x, float y, float size, String name) {
+	public Player(float x, float y, float size, int id) {
 		this.position = new Vector2(x, y);
 		this.size = size;
-		this.name = name;
+		this.id = id;
 
 		bulletSet = new HashSet<Bullet>();
 	}
@@ -48,8 +48,12 @@ public class Player {
 		return position;
 	}
 
-	public String getName() {
-		return name;
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public Set<Bullet> getBulletSet() {

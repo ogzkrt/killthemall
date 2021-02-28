@@ -2,6 +2,6 @@ package com.javakaian.network.messages;
 
 public class ShootMessage {
 
-	public String name;
+	public int id;
 	public float angleDeg;
 }
