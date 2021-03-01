@@ -23,6 +23,7 @@ import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.network.messages.PositionMessage.DIRECTION;
 import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.input.PlayStateInput;
+import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
 
@@ -35,6 +36,7 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	private Player player;
 	private List<Player> playerSet;
 	private List<Enemy> enemies;
+	private List<Bullet> bullets;
 
 	private ShapeRenderer sr;
 
@@ -88,6 +90,8 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 			p.render(sr);
 		});
 		enemies.stream().forEach(e -> e.render(sr));
+
+		bullets.stream().forEach(b -> b.render(sr));
 
 		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
 
@@ -185,12 +189,29 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 		List<Enemy> elist = new ArrayList<Enemy>();
 		for (int i = 0; i < temp.length / 2; i++) {
-			Enemy e = new Enemy(temp[i * 2], temp[i * 2 + 1], 10);
+
+			int x = temp[i * 2];
+			int y = temp[i * 2 + 1];
+
+			Enemy e = new Enemy(x, y, 10);
 			elist.add(e);
 
 		}
 
 		this.enemies = elist;
+
+		int[] tb = gwm.bullets;
+
+		List<Bullet> blist = new ArrayList<Bullet>();
+		for (int i = 0; i < tb.length / 2; i++) {
+			float x = tb[i * 2];
+			float y = tb[i * 2 + 1];
+
+			Bullet b = new Bullet(x, y, 10, 0);
+
+			blist.add(b);
+		}
+		this.bullets = blist;
 
 		int[] tp = gwm.players;
 		List<Player> plist = new ArrayList<Player>();

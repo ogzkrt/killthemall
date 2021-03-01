@@ -22,6 +22,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 	private List<Player> players;
 	private List<Enemy> enemies;
+	private List<Bullet> bullets;
 
 	private OServer oServer;
 
@@ -36,6 +37,7 @@ public class ServerWorld implements ClientMessageObserver {
 		this.oServer = new OServer(this);
 		this.players = new ArrayList<Player>();
 		this.enemies = new ArrayList<Enemy>();
+		this.bullets = new ArrayList<Bullet>();
 	}
 
 	public void update(float deltaTime) {
@@ -48,12 +50,12 @@ public class ServerWorld implements ClientMessageObserver {
 		players.forEach(p -> {
 			p.update(deltaTime);
 		});
-		players.forEach(p -> {
-			p.checkForCollisiion();
-		});
 
 		enemies.stream().forEach(e -> e.update(deltaTime));
 		enemies = enemies.stream().filter(e -> e.isVisible()).collect(Collectors.toList());
+
+		bullets.forEach(b -> b.update(deltaTime));
+		bullets = bullets.stream().filter(b -> b.isVisible()).collect(Collectors.toList());
 
 		int[] coordinates = new int[enemies.size() * 2];
 
@@ -74,6 +76,14 @@ public class ServerWorld implements ClientMessageObserver {
 
 		gwm.players = pcord;
 
+		int[] barray = new int[bullets.size() * 2];
+		for (int i = 0; i < bullets.size(); i++) {
+			barray[i * 2] = (int) bullets.get(i).getPosition().x;
+			barray[i * 2 + 1] = (int) bullets.get(i).getPosition().y;
+		}
+
+		gwm.bullets = barray;
+
 		oServer.getServer().sendToAllUDP(gwm);
 
 		if (enemyTime >= 0.4) {
@@ -81,7 +91,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);
 			enemies.add(e);
-			System.out.println("Enemie Size: " + enemies.size());
+			// System.out.println("Enemie Size: " + enemies.size());
 		}
 
 		checkCollision();
@@ -89,23 +99,23 @@ public class ServerWorld implements ClientMessageObserver {
 	}
 
 	private void checkCollision() {
-		players.forEach(p -> {
-			p.getBulletSet().stream().filter(b -> b.isVisible()).forEach(b -> {
 
-				Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
+		bullets.stream().filter(b -> b.isVisible()).forEach(b -> {
 
-				enemies.stream().forEach(e -> {
+			Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
 
-					Rectangle re = new Rectangle(e.getX(), e.getY(), 10, 10);
+			enemies.stream().forEach(e -> {
 
-					if (rb.overlaps(re)) {
-						b.setVisible(false);
-						e.setVisible(false);
-					}
-				});
+				Rectangle re = new Rectangle(e.getX(), e.getY(), 10, 10);
 
+				if (rb.overlaps(re)) {
+					b.setVisible(false);
+					e.setVisible(false);
+				}
 			});
+
 		});
+
 	}
 
 	@Override
@@ -159,8 +169,9 @@ public class ServerWorld implements ClientMessageObserver {
 
 	@Override
 	public void shootMessageReceived(ShootMessage pp) {
+
 		players.stream().filter(p -> p.getId() == pp.id).findFirst().ifPresent(p -> {
-			p.getBulletSet().add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
 			System.out.println("shoot message recieved X: " + p.getPosition().x + " Y: " + p.getPosition().y);
 		});
 

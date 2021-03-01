@@ -1,16 +1,15 @@
 package com.javakaian.shooter.shapes;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.math.Vector2;
 
 public class Bullet {
 
 	private Vector2 position;
 	private float size;
-	private String name;
 	private float angle;
 	private boolean visible = true;
+
+	private float ttlCounter = 0;
 
 	public Bullet() {
 	}
@@ -19,18 +18,22 @@ public class Bullet {
 		this.position = new Vector2(x, y);
 		this.size = size;
 		this.angle = angle;
-		this.name = UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
 	public void update(float deltaTime) {
 
 		float speed = deltaTime * 500;
+		this.ttlCounter += deltaTime;
 
 		float dx = (float) Math.cos(angle);
 		float dy = (float) Math.sin(angle);
 
 		position.y -= speed * dy;
 		position.x += speed * dx;
+		if (ttlCounter > 2) {
+			visible = false;
+			ttlCounter = 0;
+		}
 	}
 
 	public Vector2 getPosition() {
@@ -47,14 +50,6 @@ public class Bullet {
 
 	public void setSize(float size) {
 		this.size = size;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public boolean isVisible() {

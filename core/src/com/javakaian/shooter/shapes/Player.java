@@ -1,8 +1,5 @@
 package com.javakaian.shooter.shapes;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +9,6 @@ public class Player {
 	private float size;
 	private Vector2 position;
 	private int id = -1;
-	private Set<Bullet> bulletSet;
 
 	public Player() {
 	}
@@ -21,7 +17,6 @@ public class Player {
 		this.position = new Vector2(x, y);
 		this.size = size;
 
-		bulletSet = new HashSet<Bullet>();
 	}
 
 	public void render(ShapeRenderer sr) {
@@ -30,7 +25,6 @@ public class Player {
 		sr.rect(position.x, position.y, size, size);
 		sr.setColor(Color.WHITE);
 
-		bulletSet.stream().forEach(b -> b.render(sr));
 	}
 
 	public void setPosition(Vector2 position) {
@@ -49,7 +43,4 @@ public class Player {
 		return id;
 	}
 
-	public Set<Bullet> getBulletSet() {
-		return bulletSet;
-	}
 }

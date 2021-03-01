@@ -1,7 +1,5 @@
 package com.javakaian.shooter.shapes;
 
-import java.util.UUID;
-
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -9,7 +7,6 @@ public class Bullet {
 
 	private Vector2 position;
 	private float size;
-	private String name;
 	private float angle;
 	private boolean visible = true;
 
@@ -20,7 +17,6 @@ public class Bullet {
 		this.position = new Vector2(x, y);
 		this.size = size;
 		this.angle = angle;
-		this.name = UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
 	public void render(ShapeRenderer sr) {
@@ -41,14 +37,6 @@ public class Bullet {
 
 	public void setSize(float size) {
 		this.size = size;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public boolean isVisible() {
