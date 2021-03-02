@@ -1,14 +1,12 @@
 package com.javakaian.network;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.javakaian.network.messages.LoginMessage;
-import com.javakaian.network.messages.LogoutMessage;
-import com.javakaian.network.messages.PositionMessage;
-import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.ClientMessageObserver;
 
 public class OServer {
@@ -20,10 +18,16 @@ public class OServer {
 
 	private ClientMessageObserver cmo;
 
+	private BlockingQueue<Object> messageQueue;
+	private BlockingQueue<Connection> connectionQueue;
+
 	public OServer(ClientMessageObserver cmo) {
 
 		this.cmo = cmo;
 		server = new Server();
+
+		messageQueue = new ArrayBlockingQueue<Object>(100);
+		connectionQueue = new ArrayBlockingQueue<Connection>(100);
 
 		ONetwork.register(server);
 
@@ -32,24 +36,12 @@ public class OServer {
 			@Override
 			public void received(Connection connection, Object object) {
 
-				if (object instanceof LoginMessage) {
-
-					LoginMessage l = (LoginMessage) object;
-					cmo.loginReceived(connection, l);
-				} else if (object instanceof PositionMessage) {
-
-					PositionMessage move = (PositionMessage) object;
-					cmo.playerMovedReceived(move);
-
-				} else if (object instanceof LogoutMessage) {
-
-					LogoutMessage pp = (LogoutMessage) object;
-					cmo.logoutReceived(pp);
-
-				} else if (object instanceof ShootMessage) {
-
-					ShootMessage pp = (ShootMessage) object;
-					cmo.shootMessageReceived(pp);
+				try {
+					messageQueue.put(object);
+					connectionQueue.put(connection);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 			}
@@ -67,4 +59,11 @@ public class OServer {
 		return server;
 	}
 
+	public BlockingQueue<Object> getMessageQueue() {
+		return messageQueue;
+	}
+
+	public BlockingQueue<Connection> getConnectionQueue() {
+		return connectionQueue;
+	}
 }

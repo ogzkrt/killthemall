@@ -3,6 +3,7 @@ package com.javakaian.shooter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -31,18 +32,26 @@ public class ServerWorld implements ClientMessageObserver {
 
 	private int idCounter = 0;
 
+	private BlockingQueue<Object> messageQueue;
+	private BlockingQueue<Connection> connectionQueue;
+
 	public ServerWorld() {
 
 		this.oServer = new OServer(this);
 		this.players = new ArrayList<Player>();
 		this.enemies = new ArrayList<Enemy>();
 		this.bullets = new ArrayList<Bullet>();
+
+		this.messageQueue = oServer.getMessageQueue();
+		this.connectionQueue = oServer.getConnectionQueue();
 	}
 
 	public void update(float deltaTime) {
 
 		this.deltaTime = deltaTime;
 		this.enemyTime += deltaTime;
+
+		parseMessage();
 
 		GameWorldMessage gwm = new GameWorldMessage();
 
@@ -105,6 +114,33 @@ public class ServerWorld implements ClientMessageObserver {
 
 		}
 
+	}
+
+	private void parseMessage() {
+
+		Connection con = connectionQueue.poll();
+		Object message = messageQueue.poll();
+
+		if (con == null || message == null)
+			return;
+
+		if (message instanceof LoginMessage) {
+
+			LoginMessage m = (LoginMessage) message;
+			loginReceived(con, m);
+
+		} else if (message instanceof LogoutMessage) {
+			LogoutMessage m = (LogoutMessage) message;
+			logoutReceived(m);
+
+		} else if (message instanceof PositionMessage) {
+			PositionMessage m = (PositionMessage) message;
+			playerMovedReceived(m);
+
+		} else if (message instanceof ShootMessage) {
+			ShootMessage m = (ShootMessage) message;
+			shootMessageReceived(m);
+		}
 	}
 
 	@Override
