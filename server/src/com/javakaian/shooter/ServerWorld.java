@@ -1,7 +1,6 @@
 package com.javakaian.shooter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -52,19 +51,10 @@ public class ServerWorld implements ClientMessageObserver {
 		});
 
 		enemies.stream().forEach(e -> e.update(deltaTime));
-		for (Iterator<Enemy> it = enemies.iterator(); it.hasNext();) {
-			Enemy e = it.next();
-			if (!e.isVisible()) {
-				it.remove();
-			}
-		}
+
+		enemies.removeIf(e -> !e.isVisible());
 		bullets.forEach(b -> b.update(deltaTime));
-		for (Iterator<Bullet> it = bullets.iterator(); it.hasNext();) {
-			Bullet b = it.next();
-			if (!b.isVisible()) {
-				it.remove();
-			}
-		}
+		bullets.removeIf(b -> !b.isVisible());
 
 		int[] coordinates = new int[enemies.size() * 2];
 
@@ -111,13 +101,8 @@ public class ServerWorld implements ClientMessageObserver {
 		for (Bullet b : bullets) {
 
 			Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
-			for (Enemy e : enemies) {
-				Rectangle re = new Rectangle(e.getX(), e.getY(), 10, 10);
-				if (rb.overlaps(re)) {
-					e.setVisible(false);
-					b.setVisible(false);
-				}
-			}
+			enemies.removeIf(e -> e.getBoundRect().overlaps(rb));
+
 		}
 
 	}
@@ -176,6 +161,14 @@ public class ServerWorld implements ClientMessageObserver {
 
 		players.stream().filter(p -> p.getId() == pp.id).findFirst().ifPresent(p -> {
 			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 35, p.getPosition().y + 25, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 45, p.getPosition().y + 25, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 35, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 35, p.getPosition().y + 35, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 45, p.getPosition().y + 35, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 45, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 35, p.getPosition().y + 45, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 45, p.getPosition().y + 45, 10, pp.angleDeg));
 		});
 
 	}

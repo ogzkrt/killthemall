@@ -2,11 +2,14 @@ package com.javakaian.shooter.shapes;
 
 import java.util.UUID;
 
+import com.badlogic.gdx.math.Rectangle;
+
 public class Enemy {
 
 	private float x, y, size;
 	private String name;
 	private boolean visible = true;
+	private Rectangle boundRect;
 
 	public Enemy() {
 		// TODO Auto-generated constructor stub
@@ -17,11 +20,14 @@ public class Enemy {
 		this.y = y;
 		this.size = size;
 		this.name = UUID.randomUUID().toString().replaceAll("-", "");
+		this.boundRect = new Rectangle(x, y, size, size);
 
 	}
 
 	public void update(float deltaTime) {
 
+		this.boundRect.x = x;
+		this.boundRect.y = y;
 	}
 
 	public void setX(float x) {
@@ -56,4 +62,7 @@ public class Enemy {
 		this.visible = visible;
 	}
 
+	public Rectangle getBoundRect() {
+		return boundRect;
+	}
 }

@@ -8,8 +8,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
@@ -29,8 +27,6 @@ import com.javakaian.shooter.shapes.Player;
 
 public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
-	SpriteBatch batch;
-	Texture img;
 	private OrthographicCamera camera;
 
 	private Player player;
@@ -46,8 +42,6 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 	@Override
 	public void create() {
-		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -74,14 +68,10 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 	@Override
 	public void render() {
 
-		batch.setProjectionMatrix(camera.combined);
 		sr.setProjectionMatrix(camera.combined);
 		camera.update();
 
 		ScreenUtils.clear(0, 0, 0, 1);
-		batch.begin();
-		batch.draw(img, 0, 0);
-		batch.end();
 
 		sr.begin(ShapeType.Line);
 		// manyShapes.render(sr);
@@ -126,8 +116,6 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		m.id = player.getId();
 		myclient.getClient().sendTCP(m);
 
-		batch.dispose();
-		img.dispose();
 	}
 
 	private void processInputs() {
