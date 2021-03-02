@@ -67,6 +67,8 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 		playerSet = new ArrayList<Player>();
 		enemies = new ArrayList<Enemy>();
+		bullets = new ArrayList<Bullet>();
+
 	}
 
 	@Override

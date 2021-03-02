@@ -1,9 +1,9 @@
 package com.javakaian.shooter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -52,10 +52,19 @@ public class ServerWorld implements ClientMessageObserver {
 		});
 
 		enemies.stream().forEach(e -> e.update(deltaTime));
-		enemies = enemies.stream().filter(e -> e.isVisible()).collect(Collectors.toList());
-
+		for (Iterator<Enemy> it = enemies.iterator(); it.hasNext();) {
+			Enemy e = it.next();
+			if (!e.isVisible()) {
+				it.remove();
+			}
+		}
 		bullets.forEach(b -> b.update(deltaTime));
-		bullets = bullets.stream().filter(b -> b.isVisible()).collect(Collectors.toList());
+		for (Iterator<Bullet> it = bullets.iterator(); it.hasNext();) {
+			Bullet b = it.next();
+			if (!b.isVisible()) {
+				it.remove();
+			}
+		}
 
 		int[] coordinates = new int[enemies.size() * 2];
 
@@ -91,7 +100,6 @@ public class ServerWorld implements ClientMessageObserver {
 
 			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);
 			enemies.add(e);
-			// System.out.println("Enemie Size: " + enemies.size());
 		}
 
 		checkCollision();
@@ -100,21 +108,17 @@ public class ServerWorld implements ClientMessageObserver {
 
 	private void checkCollision() {
 
-		bullets.stream().filter(b -> b.isVisible()).forEach(b -> {
+		for (Bullet b : bullets) {
 
 			Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
-
-			enemies.stream().forEach(e -> {
-
+			for (Enemy e : enemies) {
 				Rectangle re = new Rectangle(e.getX(), e.getY(), 10, 10);
-
 				if (rb.overlaps(re)) {
-					b.setVisible(false);
 					e.setVisible(false);
+					b.setVisible(false);
 				}
-			});
-
-		});
+			}
+		}
 
 	}
 
@@ -172,7 +176,6 @@ public class ServerWorld implements ClientMessageObserver {
 
 		players.stream().filter(p -> p.getId() == pp.id).findFirst().ifPresent(p -> {
 			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
-			System.out.println("shoot message recieved X: " + p.getPosition().x + " Y: " + p.getPosition().y);
 		});
 
 	}
