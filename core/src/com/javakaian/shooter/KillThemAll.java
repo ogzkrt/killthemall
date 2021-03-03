@@ -123,21 +123,45 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 		PositionMessage p = new PositionMessage();
 		p.id = player.getId();
 
-		if (Gdx.input.isKeyPressed(Keys.W)) {
-			p.direction = DIRECTION.UP;
+		if (Gdx.input.isKeyPressed(Keys.W) && Gdx.input.isKeyPressed(Keys.A)) {
+			p.direction = DIRECTION.UP_LEFT;
 			myclient.getClient().sendUDP(p);
+			return;
+		}
+		if (Gdx.input.isKeyPressed(Keys.W) && Gdx.input.isKeyPressed(Keys.D)) {
+			p.direction = DIRECTION.UP_RIGHT;
+			myclient.getClient().sendUDP(p);
+			return;
+		}
+		if (Gdx.input.isKeyPressed(Keys.S) && Gdx.input.isKeyPressed(Keys.A)) {
+			p.direction = DIRECTION.DOWN_LEFT;
+			myclient.getClient().sendUDP(p);
+			return;
+		}
+		if (Gdx.input.isKeyPressed(Keys.S) && Gdx.input.isKeyPressed(Keys.D)) {
+			p.direction = DIRECTION.DOWN_RIGHT;
+			myclient.getClient().sendUDP(p);
+			return;
 		}
 		if (Gdx.input.isKeyPressed(Keys.S)) {
 			p.direction = DIRECTION.DOWN;
 			myclient.getClient().sendUDP(p);
+			return;
+		}
+		if (Gdx.input.isKeyPressed(Keys.W)) {
+			p.direction = DIRECTION.UP;
+			myclient.getClient().sendUDP(p);
+			return;
 		}
 		if (Gdx.input.isKeyPressed(Keys.A)) {
 			p.direction = DIRECTION.LEFT;
 			myclient.getClient().sendUDP(p);
+			return;
 		}
 		if (Gdx.input.isKeyPressed(Keys.D)) {
 			p.direction = DIRECTION.RIGHT;
 			myclient.getClient().sendUDP(p);
+			return;
 		}
 
 	}

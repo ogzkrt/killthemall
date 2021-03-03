@@ -37,6 +37,10 @@ public class OServer {
 			public void received(Connection connection, Object object) {
 
 				try {
+
+					if (messageQueue.size() == 10)
+						return;
+
 					messageQueue.put(object);
 					connectionQueue.put(connection);
 				} catch (InterruptedException e) {

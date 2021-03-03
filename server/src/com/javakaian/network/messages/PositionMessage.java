@@ -6,7 +6,7 @@ public class PositionMessage {
 	public DIRECTION direction;
 
 	public enum DIRECTION {
-		LEFT, RIGHT, DOWN, UP
+		LEFT, RIGHT, DOWN, DOWN_LEFT, DOWN_RIGHT, UP, UP_LEFT, UP_RIGHT
 	}
 
 }

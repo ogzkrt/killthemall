@@ -185,6 +185,22 @@ public class ServerWorld implements ClientMessageObserver {
 		case DOWN:
 			v.y += deltaTime * 200;
 			break;
+		case UP_LEFT:
+			v.y -= deltaTime * 200;
+			v.x -= deltaTime * 200;
+			break;
+		case UP_RIGHT:
+			v.y -= deltaTime * 200;
+			v.x += deltaTime * 200;
+			break;
+		case DOWN_LEFT:
+			v.y += deltaTime * 200;
+			v.x -= deltaTime * 200;
+			break;
+		case DOWN_RIGHT:
+			v.y += deltaTime * 200;
+			v.x += deltaTime * 200;
+			break;
 
 		default:
 			break;
