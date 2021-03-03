@@ -96,7 +96,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 		if (enemyTime >= 0.4) {
 			enemyTime = 0;
-
+			System.out.println("SIZE:" + messageQueue.size());
 			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);
 			enemies.add(e);
 		}
