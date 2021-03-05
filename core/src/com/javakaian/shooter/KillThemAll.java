@@ -2,6 +2,7 @@ package com.javakaian.shooter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -52,7 +53,8 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 		myclient = new OClient(this);
 
-		player = new Player(140, 50, 50);
+		player = new Player(new Random().nextInt(Gdx.graphics.getWidth()),
+				new Random().nextInt(Gdx.graphics.getHeight()), 50);
 
 		LoginMessage m = new LoginMessage();
 		m.x = player.getPosition().x;
