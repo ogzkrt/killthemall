@@ -2,8 +2,8 @@ package com.javakaian.shooter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -32,8 +32,8 @@ public class ServerWorld implements ClientMessageObserver {
 
 	private int idCounter = 0;
 
-	private BlockingQueue<Object> messageQueue;
-	private BlockingQueue<Connection> connectionQueue;
+	private Queue<Object> messageQueue;
+	private Queue<Connection> connectionQueue;
 
 	public ServerWorld() {
 
@@ -118,29 +118,34 @@ public class ServerWorld implements ClientMessageObserver {
 
 	private void parseMessage() {
 
-		Connection con = connectionQueue.poll();
-		Object message = messageQueue.poll();
-
-		if (con == null || message == null)
+		if (connectionQueue.isEmpty() || messageQueue.isEmpty())
 			return;
 
-		if (message instanceof LoginMessage) {
+		for (int i = 0; i < messageQueue.size(); i++) {
 
-			LoginMessage m = (LoginMessage) message;
-			loginReceived(con, m);
+			Connection con = connectionQueue.poll();
+			Object message = messageQueue.poll();
 
-		} else if (message instanceof LogoutMessage) {
-			LogoutMessage m = (LogoutMessage) message;
-			logoutReceived(m);
+			if (message instanceof LoginMessage) {
 
-		} else if (message instanceof PositionMessage) {
-			PositionMessage m = (PositionMessage) message;
-			playerMovedReceived(m);
+				LoginMessage m = (LoginMessage) message;
+				loginReceived(con, m);
 
-		} else if (message instanceof ShootMessage) {
-			ShootMessage m = (ShootMessage) message;
-			shootMessageReceived(m);
+			} else if (message instanceof LogoutMessage) {
+				LogoutMessage m = (LogoutMessage) message;
+				logoutReceived(m);
+
+			} else if (message instanceof PositionMessage) {
+				PositionMessage m = (PositionMessage) message;
+				playerMovedReceived(m);
+
+			} else if (message instanceof ShootMessage) {
+				ShootMessage m = (ShootMessage) message;
+				shootMessageReceived(m);
+			}
+
 		}
+
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 package com.javakaian.network;
 
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -18,16 +18,16 @@ public class OServer {
 
 	private ClientMessageObserver cmo;
 
-	private BlockingQueue<Object> messageQueue;
-	private BlockingQueue<Connection> connectionQueue;
+	private Queue<Object> messageQueue;
+	private Queue<Connection> connectionQueue;
 
 	public OServer(ClientMessageObserver cmo) {
 
 		this.cmo = cmo;
 		server = new Server();
 
-		messageQueue = new ArrayBlockingQueue<Object>(100);
-		connectionQueue = new ArrayBlockingQueue<Connection>(100);
+		messageQueue = new LinkedList<Object>();
+		connectionQueue = new LinkedList<Connection>();
 
 		ONetwork.register(server);
 
@@ -36,17 +36,8 @@ public class OServer {
 			@Override
 			public void received(Connection connection, Object object) {
 
-				try {
-
-					if (messageQueue.size() == 10)
-						return;
-
-					messageQueue.put(object);
-					connectionQueue.put(connection);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				messageQueue.add(object);
+				connectionQueue.add(connection);
 
 			}
 		});
@@ -63,11 +54,11 @@ public class OServer {
 		return server;
 	}
 
-	public BlockingQueue<Object> getMessageQueue() {
+	public Queue<Object> getMessageQueue() {
 		return messageQueue;
 	}
 
-	public BlockingQueue<Connection> getConnectionQueue() {
+	public Queue<Connection> getConnectionQueue() {
 		return connectionQueue;
 	}
 }
