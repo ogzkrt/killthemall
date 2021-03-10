@@ -170,7 +170,6 @@ public class KillThemAll extends ApplicationAdapter implements NetworkEvents {
 
 	public void scrolled(float amountY) {
 
-		System.out.println(camera.zoom);
 		if (amountY > 0) {
 			camera.zoom += 0.2;
 		} else {
