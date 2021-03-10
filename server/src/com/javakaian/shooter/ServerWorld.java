@@ -94,7 +94,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 		oServer.getServer().sendToAllUDP(gwm);
 
-		if (enemyTime >= 0.4) {
+		if (enemyTime >= 0.4 && enemies.size() <= 100) {
 			enemyTime = 0;
 			if (enemies.size() % 50 == 0)
 				System.out.println("Number of enemies : " + enemies.size());

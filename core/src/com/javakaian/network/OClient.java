@@ -1,7 +1,6 @@
 package com.javakaian.network;
 
 import java.io.IOException;
-import java.net.InetAddress;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -53,7 +52,7 @@ public class OClient {
 		}));
 
 		try {
-			client.connect(5000, InetAddress.getByName("192.168.105.96"), 1234, 1235);
+			client.connect(5000, "localhost", 1234, 1235);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

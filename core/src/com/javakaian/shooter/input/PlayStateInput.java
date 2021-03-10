@@ -2,23 +2,24 @@ package com.javakaian.shooter.input;
 
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
-import com.javakaian.shooter.KillThemAll;
+import com.javakaian.states.PlayState;
+import com.javakaian.states.State.StateEnum;
 
 public class PlayStateInput extends InputAdapter {
 
-	private KillThemAll game;
+	private PlayState playState;
 
 	public PlayStateInput() {
 	}
 
-	public PlayStateInput(KillThemAll game) {
-		this.game = game;
+	public PlayStateInput(PlayState playState) {
+		this.playState = playState;
 	}
 
 	@Override
 	public boolean scrolled(float amountX, float amountY) {
 
-		game.scrolled(amountY);
+		playState.scrolled(amountY);
 
 		return super.scrolled(amountX, amountY);
 	}
@@ -29,7 +30,11 @@ public class PlayStateInput extends InputAdapter {
 		switch (keycode) {
 		case Keys.SPACE:
 			// game.resetZoom();
-			game.shoot();
+			playState.shoot();
+			break;
+		case Keys.M:
+			// game.resetZoom();
+			playState.getSc().setState(StateEnum.MenuState);
 			break;
 
 		default:
