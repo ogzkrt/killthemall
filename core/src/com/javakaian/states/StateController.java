@@ -12,8 +12,11 @@ public class StateController {
 
 	private State currentState;
 
-	public StateController() {
+	private String ip;
 
+	public StateController(String ip) {
+
+		this.ip = ip;
 		stateMap = new HashMap<Integer, State>();
 	}
 
@@ -63,6 +66,10 @@ public class StateController {
 
 	public Map<Integer, State> getStateMap() {
 		return stateMap;
+	}
+
+	public String getIp() {
+		return ip;
 	}
 
 }

@@ -9,10 +9,16 @@ public class KillThemAll extends ApplicationAdapter {
 
 	private StateController sc;
 
+	private String ip;
+
+	public KillThemAll(String ip) {
+		this.ip = ip;
+	}
+
 	@Override
 	public void create() {
 
-		sc = new StateController();
+		sc = new StateController(ip);
 		sc.setState(StateEnum.MenuState);
 
 	}

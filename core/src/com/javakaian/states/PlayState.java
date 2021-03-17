@@ -41,7 +41,7 @@ public class PlayState extends State implements NetworkEvents {
 
 		ip = new PlayStateInput(this);
 
-		myclient = new OClient(this);
+		myclient = new OClient(sc.getIp(), this);
 
 		player = new Player(new Random().nextInt(GameConstants.SCREEN_WIDTH),
 				new Random().nextInt(GameConstants.SCREEN_HEIGHT), 50);

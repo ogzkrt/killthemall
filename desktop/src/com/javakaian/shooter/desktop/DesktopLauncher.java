@@ -13,6 +13,14 @@ public class DesktopLauncher {
 		config.foregroundFPS = 60;
 		config.backgroundFPS = 60;
 		// config.x = 2500;
-		new LwjglApplication(new KillThemAll(), config);
+
+		String ip = null;
+		if (arg.length == 0) {
+			System.out.println("No arg has been passed. LOCALHOST ip.");
+			ip = "localhost";
+		} else {
+			ip = arg[0];
+		}
+		new LwjglApplication(new KillThemAll(ip), config);
 	}
 }

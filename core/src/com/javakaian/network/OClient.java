@@ -1,6 +1,7 @@
 package com.javakaian.network;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -17,10 +18,12 @@ public class OClient {
 	private Client client;
 	private NetworkEvents game;
 
-	public OClient(NetworkEvents game) {
+	private String ip;
+
+	public OClient(String ip, NetworkEvents game) {
 
 		this.game = game;
-
+		this.ip = ip;
 		client = new Client();
 		client.start();
 
@@ -55,7 +58,8 @@ public class OClient {
 		}));
 
 		try {
-			client.connect(5000, "localhost", 1234, 1235);
+			System.out.println("Attempting to connect args[0]: " + ip);
+			client.connect(5000, InetAddress.getByName(ip), 1234, 1235);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
