@@ -55,7 +55,7 @@ public abstract class State {
 
 	public enum StateEnum {
 
-		PlayState, PauseState, MenuState, GameOverState, CreditsState, OptionState
+		PlayState, MenuState, GameOverState
 
 	}
 

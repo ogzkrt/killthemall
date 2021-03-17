@@ -9,9 +9,6 @@ public class MenuStateInput extends InputAdapter {
 
 	private MenuState menuState;
 
-	public MenuStateInput() {
-	}
-
 	public MenuStateInput(MenuState game) {
 		this.menuState = game;
 	}
@@ -23,12 +20,8 @@ public class MenuStateInput extends InputAdapter {
 		case Keys.SPACE:
 			menuState.getSc().setState(StateEnum.PlayState);
 			break;
-
 		case Keys.Q:
 			menuState.quit();
-			break;
-		case Keys.R:
-			menuState.restart();
 			break;
 
 		default:

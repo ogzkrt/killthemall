@@ -11,7 +11,6 @@ public class Player {
 	private Vector2 position;
 	private int id = -1;
 	private int health;
-	private boolean alive;
 
 	public Player() {
 	}
@@ -20,7 +19,6 @@ public class Player {
 		this.position = new Vector2(x, y);
 		this.size = size;
 		this.health = 100;
-		this.alive = true;
 	}
 
 	public void render(ShapeRenderer sr) {
@@ -58,15 +56,6 @@ public class Player {
 
 	public void setHealth(int health) {
 		this.health = health;
-	}
-
-	public void setAlive(boolean alive) {
-		this.alive = alive;
-	}
-
-	public boolean isAlive() {
-
-		return alive;
 	}
 
 }

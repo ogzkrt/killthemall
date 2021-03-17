@@ -29,15 +29,10 @@ public class StateController {
 				currentState = new PlayState(this);
 				break;
 			case GameOverState:
+				currentState = new GameOverState(this);
 				break;
 			case MenuState:
 				currentState = new MenuState(this);
-				break;
-			case OptionState:
-				break;
-			case CreditsState:
-				break;
-			case PauseState:
 				break;
 
 			default:

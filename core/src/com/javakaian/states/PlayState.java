@@ -39,7 +39,11 @@ public class PlayState extends State implements NetworkEvents {
 	public PlayState(StateController sc) {
 		super(sc);
 
+		init();
 		ip = new PlayStateInput(this);
+	}
+
+	private void init() {
 
 		myclient = new OClient(sc.getIp(), this);
 
@@ -65,24 +69,20 @@ public class PlayState extends State implements NetworkEvents {
 		ScreenUtils.clear(0, 0, 0, 1);
 
 		sr.begin(ShapeType.Line);
-		// manyShapes.render(sr);
-		// manyShapes.update(Gdx.graphics.getDeltaTime());
 
-		if (player.isAlive()) {
-			player.render(sr);
-			if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
+		player.render(sr);
+		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
 
-				Vector3 up = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-				Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
-				Vector2 mouse = new Vector2(up.x, up.y);
+			Vector3 up = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+			Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
+			Vector2 mouse = new Vector2(up.x, up.y);
 
-				angle = (float) (8 * Math.PI / 4 - mouse.sub(pos).angleRad());
-				int r = 20;
-				sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
+			angle = (float) (8 * Math.PI / 4 - mouse.sub(pos).angleRad());
+			int r = 20;
+			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
 
-			} else {
-				angle = (float) (Math.PI / 2);
-			}
+		} else {
+			angle = (float) (Math.PI / 2);
 
 			float lerp = 0.05f;
 
@@ -91,7 +91,9 @@ public class PlayState extends State implements NetworkEvents {
 
 		}
 
-		playerSet.forEach(p -> {
+		playerSet.forEach(p ->
+
+		{
 			p.render(sr);
 		});
 		enemies.stream().forEach(e -> e.render(sr));
@@ -118,9 +120,6 @@ public class PlayState extends State implements NetworkEvents {
 	}
 
 	public void shoot() {
-
-		if (!player.isAlive())
-			return;
 
 		ShootMessage m = new ShootMessage();
 		m.id = player.getId();
@@ -195,9 +194,6 @@ public class PlayState extends State implements NetworkEvents {
 
 	private void processInputs() {
 
-		if (!player.isAlive())
-			return;
-
 		PositionMessage p = new PositionMessage();
 		p.id = player.getId();
 
@@ -257,9 +253,18 @@ public class PlayState extends State implements NetworkEvents {
 
 		if (player.getId() != id)
 			return;
-		this.player.setAlive(false);
-		this.sc.setState(StateEnum.MenuState);
 
+		LogoutMessage m = new LogoutMessage();
+		m.id = player.getId();
+		myclient.getClient().sendTCP(m);
+
+		this.getSc().setState(StateEnum.GameOverState);
+
+	}
+
+	public void restart() {
+		System.out.println("Game should be restarted from PLAYSTATE");
+		init();
 	}
 
 }

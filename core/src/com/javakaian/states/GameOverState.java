@@ -4,23 +4,24 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.javakaian.shooter.input.MenuStateInput;
+import com.javakaian.shooter.input.GameOverInput;
 import com.javakaian.shooter.utils.GameUtils;
 
-public class MenuState extends State {
+public class GameOverState extends State {
 
 	private BitmapFont smallFont;
 
-	public MenuState(StateController sc) {
+	public GameOverState(StateController sc) {
 		super(sc);
 
-		ip = new MenuStateInput(this);
+		this.ip = new GameOverInput(this);
 		smallFont = GameUtils.generateBitmapFont(32, Color.WHITE);
+
+		System.out.println("GAME OVER STATE HAS BEEN CREATED..");
 	}
 
 	@Override
 	public void render() {
-		// TODO Auto-generated method stub
 		float red = 50f;
 		float green = 63f;
 		float blue = 94f;
@@ -28,10 +29,9 @@ public class MenuState extends State {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		sb.begin();
-		GameUtils.renderCenter("Menu", sb, bitmapFont);
-		GameUtils.renderCenter("Press Space to Contunie", sb, smallFont, 0.6f);
+		GameUtils.renderCenter("Game Over", sb, bitmapFont);
+		GameUtils.renderCenter("Press R to Restart", sb, smallFont, 0.6f);
 		sb.end();
-
 	}
 
 	@Override
@@ -40,20 +40,15 @@ public class MenuState extends State {
 
 	}
 
-	public void quit() {
-		Gdx.app.exit();
-	}
-
 	@Override
 	public void dispose() {
+		// TODO Auto-generated method stub
 
 	}
 
 	public void restart() {
-
 		PlayState playState = (PlayState) this.sc.getStateMap().get(StateEnum.PlayState.ordinal());
 		playState.restart();
-
 	}
 
 }
