@@ -10,4 +10,6 @@ public interface NetworkEvents {
 
 	public void gwmReceived(GameWorldMessage gwm);
 
+	public void playerDied(int id);
+
 }

@@ -1,17 +1,21 @@
 package com.javakaian.states;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.javakaian.shooter.input.MenuStateInput;
 import com.javakaian.shooter.utils.GameUtils;
 
 public class MenuState extends State {
 
+	private BitmapFont smallFont;
+
 	public MenuState(StateController sc) {
 		super(sc);
 
 		ip = new MenuStateInput(this);
-
+		smallFont = GameUtils.generateBitmapFont(32, Color.WHITE);
 	}
 
 	@Override
@@ -25,6 +29,7 @@ public class MenuState extends State {
 
 		sb.begin();
 		GameUtils.renderCenter("Menu", sb, bitmapFont);
+		GameUtils.renderCenter("Press Space to Contunie", sb, smallFont, 0.6f);
 		sb.end();
 
 	}
@@ -41,6 +46,10 @@ public class MenuState extends State {
 
 	@Override
 	public void dispose() {
+
+	}
+
+	public void restart() {
 
 	}
 

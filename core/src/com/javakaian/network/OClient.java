@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.LogoutMessage;
+import com.javakaian.network.messages.PlayerDied;
 import com.javakaian.shooter.NetworkEvents;
 
 public class OClient {
@@ -35,16 +36,18 @@ public class OClient {
 					LoginMessage newPlayer = (LoginMessage) object;
 					addNew(newPlayer.x, newPlayer.y, newPlayer.id);
 
-				}
-				if (object instanceof LogoutMessage) {
+				} else if (object instanceof LogoutMessage) {
 
 					LogoutMessage pp = (LogoutMessage) object;
 					removePlayer(pp);
-				}
-				if (object instanceof GameWorldMessage) {
+				} else if (object instanceof GameWorldMessage) {
 
 					GameWorldMessage gwm = (GameWorldMessage) object;
 					gwmReceived(gwm);
+				} else if (object instanceof PlayerDied) {
+
+					PlayerDied m = (PlayerDied) object;
+					playerDied(m);
 				}
 
 			}
@@ -58,6 +61,10 @@ public class OClient {
 			e.printStackTrace();
 		}
 
+	}
+
+	public void playerDied(PlayerDied m) {
+		game.playerDied(m.id);
 	}
 
 	public void gwmReceived(GameWorldMessage gwm) {

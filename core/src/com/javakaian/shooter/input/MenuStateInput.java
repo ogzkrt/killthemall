@@ -27,6 +27,9 @@ public class MenuStateInput extends InputAdapter {
 		case Keys.Q:
 			menuState.quit();
 			break;
+		case Keys.R:
+			menuState.restart();
+			break;
 
 		default:
 			break;

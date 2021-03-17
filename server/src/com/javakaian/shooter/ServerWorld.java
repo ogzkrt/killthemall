@@ -12,6 +12,7 @@ import com.javakaian.network.OServer;
 import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.LogoutMessage;
+import com.javakaian.network.messages.PlayerDied;
 import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.shapes.Bullet;
@@ -55,6 +56,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 		GameWorldMessage gwm = new GameWorldMessage();
 
+		players.removeIf(p -> !p.isAlive());
 		players.forEach(p -> {
 			p.update(deltaTime);
 		});
@@ -74,12 +76,13 @@ public class ServerWorld implements ClientMessageObserver {
 
 		gwm.enemies = coordinates;
 
-		int[] pcord = new int[players.size() * 3];
+		int[] pcord = new int[players.size() * 4];
 		for (int i = 0; i < players.size(); i++) {
 
-			pcord[i * 3] = (int) players.get(i).getPosition().x;
-			pcord[i * 3 + 1] = (int) players.get(i).getPosition().y;
-			pcord[i * 3 + 2] = (int) players.get(i).getId();
+			pcord[i * 4] = (int) players.get(i).getPosition().x;
+			pcord[i * 4 + 1] = (int) players.get(i).getPosition().y;
+			pcord[i * 4 + 2] = players.get(i).getId();
+			pcord[i * 4 + 3] = players.get(i).getHealth();
 		}
 
 		gwm.players = pcord;
@@ -94,7 +97,7 @@ public class ServerWorld implements ClientMessageObserver {
 
 		oServer.getServer().sendToAllUDP(gwm);
 
-		if (enemyTime >= 0.4 && enemies.size() <= 100) {
+		if (enemyTime >= 0.4 && enemies.size() <= 15) {
 			enemyTime = 0;
 			if (enemies.size() % 50 == 0)
 				System.out.println("Number of enemies : " + enemies.size());
@@ -111,7 +114,29 @@ public class ServerWorld implements ClientMessageObserver {
 		for (Bullet b : bullets) {
 
 			Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
-			enemies.removeIf(e -> e.getBoundRect().overlaps(rb));
+
+			for (Enemy e : enemies) {
+
+				if (b.isVisible() && e.getBoundRect().overlaps(rb)) {
+					b.setVisible(false);
+					e.setVisible(false);
+				}
+
+			}
+
+			for (Player p : players) {
+				if (b.isVisible() && p.getBoundRect().overlaps(rb) && p.getId() != b.getId()) {
+					b.setVisible(false);
+					p.hit();
+					if (!p.isAlive()) {
+
+						PlayerDied m = new PlayerDied();
+						m.id = p.getId();
+						oServer.getServer().sendToAllUDP(m);
+					}
+
+				}
+			}
 
 		}
 
@@ -218,15 +243,7 @@ public class ServerWorld implements ClientMessageObserver {
 	public void shootMessageReceived(ShootMessage pp) {
 
 		players.stream().filter(p -> p.getId() == pp.id).findFirst().ifPresent(p -> {
-			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 35, p.getPosition().y + 25, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 45, p.getPosition().y + 25, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 35, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 35, p.getPosition().y + 35, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 45, p.getPosition().y + 35, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 45, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 35, p.getPosition().y + 45, 10, pp.angleDeg));
-			bullets.add(new Bullet(p.getPosition().x + 45, p.getPosition().y + 45, 10, pp.angleDeg));
+			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg, pp.id));
 		});
 
 	}

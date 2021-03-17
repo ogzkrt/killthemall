@@ -10,14 +10,16 @@ public class Bullet {
 	private boolean visible = true;
 
 	private float ttlCounter = 0;
+	private int id;
 
 	public Bullet() {
 	}
 
-	public Bullet(float x, float y, float size, float angle) {
+	public Bullet(float x, float y, float size, float angle, int id) {
 		this.position = new Vector2(x, y);
 		this.size = size;
 		this.angle = angle;
+		this.id = id;
 	}
 
 	public void update(float deltaTime) {
@@ -58,6 +60,10 @@ public class Bullet {
 
 	public void setVisible(boolean visible) {
 		this.visible = visible;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 }

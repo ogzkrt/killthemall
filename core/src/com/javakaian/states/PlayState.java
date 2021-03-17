@@ -68,7 +68,29 @@ public class PlayState extends State implements NetworkEvents {
 		// manyShapes.render(sr);
 		// manyShapes.update(Gdx.graphics.getDeltaTime());
 
-		player.render(sr);
+		if (player.isAlive()) {
+			player.render(sr);
+			if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
+
+				Vector3 up = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+				Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
+				Vector2 mouse = new Vector2(up.x, up.y);
+
+				angle = (float) (8 * Math.PI / 4 - mouse.sub(pos).angleRad());
+				int r = 20;
+				sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
+
+			} else {
+				angle = (float) (Math.PI / 2);
+			}
+
+			float lerp = 0.05f;
+
+			camera.position.x += (player.getPosition().x - camera.position.x) * lerp;
+			camera.position.y += (player.getPosition().y - camera.position.y) * lerp;
+
+		}
+
 		playerSet.forEach(p -> {
 			p.render(sr);
 		});
@@ -76,26 +98,7 @@ public class PlayState extends State implements NetworkEvents {
 
 		bullets.stream().forEach(b -> b.render(sr));
 
-		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
-
-			Vector3 up = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-			Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
-			Vector2 mouse = new Vector2(up.x, up.y);
-
-			angle = (float) (8 * Math.PI / 4 - mouse.sub(pos).angleRad());
-			int r = 20;
-			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
-
-		} else {
-			angle = (float) (Math.PI / 2);
-		}
-
 		sr.end();
-
-		float lerp = 0.05f;
-
-		camera.position.x += (player.getPosition().x - camera.position.x) * lerp;
-		camera.position.y += (player.getPosition().y - camera.position.y) * lerp;
 
 	}
 
@@ -116,6 +119,9 @@ public class PlayState extends State implements NetworkEvents {
 
 	public void shoot() {
 
+		if (!player.isAlive())
+			return;
+
 		ShootMessage m = new ShootMessage();
 		m.id = player.getId();
 		m.angleDeg = angle;
@@ -131,14 +137,11 @@ public class PlayState extends State implements NetworkEvents {
 
 	@Override
 	public void removePlayer(int id) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void gwmReceived(GameWorldMessage gwm) {
-		if (this.player.getId() == -1)
-			return;
 
 		int[] temp = gwm.enemies;
 
@@ -172,13 +175,15 @@ public class PlayState extends State implements NetworkEvents {
 		List<Player> plist = new ArrayList<Player>();
 		for (int i = 0; i < tp.length / 3; i++) {
 
-			int x = tp[i * 3];
-			int y = tp[i * 3 + 1];
-			int id = tp[i * 3 + 2];
+			int x = tp[i * 4];
+			int y = tp[i * 4 + 1];
+			int id = tp[i * 4 + 2];
+			int health = tp[i * 4 + 3];
 			Player p = new Player(x, y, 50);
+			p.setHealth(health);
 			p.setId(id);
 
-			if (player.getId() != -1 && (id == player.getId())) {
+			if (player != null && player.getId() != -1 && (id == player.getId())) {
 				player = p;
 			} else {
 				plist.add(p);
@@ -189,6 +194,9 @@ public class PlayState extends State implements NetworkEvents {
 	}
 
 	private void processInputs() {
+
+		if (!player.isAlive())
+			return;
 
 		PositionMessage p = new PositionMessage();
 		p.id = player.getId();
@@ -242,6 +250,16 @@ public class PlayState extends State implements NetworkEvents {
 		LogoutMessage m = new LogoutMessage();
 		m.id = player.getId();
 		myclient.getClient().sendTCP(m);
+	}
+
+	@Override
+	public void playerDied(int id) {
+
+		if (player.getId() != id)
+			return;
+		this.player.setAlive(false);
+		this.sc.setState(StateEnum.MenuState);
+
 	}
 
 }

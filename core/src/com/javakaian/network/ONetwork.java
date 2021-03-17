@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.EndPoint;
 import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.LogoutMessage;
+import com.javakaian.network.messages.PlayerDied;
 import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.network.messages.ShootMessage;
 
@@ -21,6 +22,7 @@ public class ONetwork {
 		kryo.register(PositionMessage.class);
 		kryo.register(PositionMessage.DIRECTION.class);
 		kryo.register(ShootMessage.class);
+		kryo.register(PlayerDied.class);
 		// objects
 		kryo.register(int[].class);
 

@@ -31,4 +31,12 @@ public class GameUtils {
 
 	}
 
+	public static void renderCenter(String text, SpriteBatch sb, BitmapFont font, float y) {
+
+		GlyphLayout gl = new GlyphLayout(font, text);
+		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2 - gl.width / 2,
+				GameConstants.SCREEN_HEIGHT * y - gl.height / 2);
+
+	}
+
 }
