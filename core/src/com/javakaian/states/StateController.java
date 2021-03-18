@@ -19,9 +19,6 @@ public class StateController {
 		this.ip = ip;
 		stateMap = new HashMap<Integer, State>();
 
-		stateMap.put(StateEnum.MenuState.ordinal(), new MenuState(this));
-		stateMap.put(StateEnum.GameOverState.ordinal(), new GameOverState(this));
-
 	}
 
 	public void setState(StateEnum stateEnum) {
@@ -56,14 +53,10 @@ public class StateController {
 
 	public void render() {
 
-		if (currentState == null)
-			return;
 		currentState.render();
 	}
 
 	public void update(float deltaTime) {
-		if (currentState == null)
-			return;
 		currentState.update(deltaTime);
 	}
 

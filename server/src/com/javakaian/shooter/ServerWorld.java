@@ -202,6 +202,9 @@ public class ServerWorld implements ClientMessageObserver {
 				player = p;
 		}
 
+		if (player == null)
+			return;
+
 		Vector2 v = player.getPosition();
 		switch (move.direction) {
 		case LEFT:

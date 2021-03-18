@@ -258,7 +258,16 @@ public class PlayState extends State implements NetworkEvents {
 		m.id = player.getId();
 		myclient.getClient().sendTCP(m);
 
-		this.getSc().setState(StateEnum.GameOverState);
+		// this.getSc().setState(StateEnum.GameOverState);
+		Gdx.app.postRunnable(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				PlayState.this.getSc().setState(StateEnum.GameOverState);
+
+			}
+		});
 
 	}
 
