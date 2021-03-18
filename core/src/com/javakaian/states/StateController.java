@@ -18,6 +18,10 @@ public class StateController {
 
 		this.ip = ip;
 		stateMap = new HashMap<Integer, State>();
+
+		stateMap.put(StateEnum.MenuState.ordinal(), new MenuState(this));
+		stateMap.put(StateEnum.GameOverState.ordinal(), new GameOverState(this));
+
 	}
 
 	public void setState(StateEnum stateEnum) {
@@ -27,29 +31,39 @@ public class StateController {
 			switch (stateEnum) {
 			case PlayState:
 				currentState = new PlayState(this);
+				System.out.println("CURRENT STATE IS PLAY");
 				break;
 			case GameOverState:
 				currentState = new GameOverState(this);
+				System.out.println("CURRENT STATE IS GAME OVER");
 				break;
 			case MenuState:
 				currentState = new MenuState(this);
+				System.out.println("CURRENT STATE IS MENU");
+				break;
+			case PauseState:
+				currentState = new PauseState(this);
+				System.out.println("CURRENT STATE IS POUSE ");
 				break;
 
 			default:
 				break;
 			}
+			stateMap.put(stateEnum.ordinal(), currentState);
 		}
-		stateMap.put(stateEnum.ordinal(), currentState);
 		Gdx.input.setInputProcessor(currentState.ip);
 	}
 
 	public void render() {
 
+		if (currentState == null)
+			return;
 		currentState.render();
 	}
 
 	public void update(float deltaTime) {
-
+		if (currentState == null)
+			return;
 		currentState.update(deltaTime);
 	}
 

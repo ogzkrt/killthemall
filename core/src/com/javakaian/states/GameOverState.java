@@ -9,16 +9,14 @@ import com.javakaian.shooter.utils.GameUtils;
 
 public class GameOverState extends State {
 
-	private BitmapFont smallFont;
-
 	public GameOverState(StateController sc) {
 		super(sc);
-
-		this.ip = new GameOverInput(this);
+		ip = new GameOverInput(this);
 		smallFont = GameUtils.generateBitmapFont(32, Color.WHITE);
 
-		System.out.println("GAME OVER STATE HAS BEEN CREATED..");
 	}
+
+	private BitmapFont smallFont;
 
 	@Override
 	public void render() {
