@@ -1,0 +1,10 @@
+sourceCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.resources.srcDirs = ["./assets"]
+
+project.ext.mainClassName = "com.javakaian.shooter.ClientMain"
+project.ext.assetDir = new File("./assets")
+
+eclipse.project.name = appName + "-client"

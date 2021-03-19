@@ -1,11 +1,10 @@
-package com.javakaian.shooter.desktop;
+package com.javakaian.shooter;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.javakaian.shooter.KillThemAll;
 import com.javakaian.shooter.utils.GameConstants;
 
-public class DesktopLauncher {
+public class ClientMain {
 	public static void main(String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = GameConstants.SCREEN_WIDTH;
