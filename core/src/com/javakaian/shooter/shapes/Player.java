@@ -22,7 +22,6 @@ public class Player {
 	}
 
 	public void render(ShapeRenderer sr) {
-		// TODO Auto-generated method stub
 		sr.rect(position.x, position.y, size, size);
 		sr.end();
 		sr.begin(ShapeType.Filled);

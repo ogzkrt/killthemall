@@ -12,6 +12,7 @@ public class DesktopLauncher {
 		config.height = GameConstants.SCREEN_HEIGHT;
 		config.foregroundFPS = 60;
 		config.backgroundFPS = 60;
+		config.resizable = false;
 		// config.x = 2500;
 
 		String ip = null;

@@ -7,6 +7,7 @@ import java.util.Random;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -24,6 +25,7 @@ import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
 import com.javakaian.shooter.utils.GameConstants;
+import com.javakaian.shooter.utils.GameUtils;
 
 public class PlayState extends State implements NetworkEvents {
 
@@ -78,29 +80,31 @@ public class PlayState extends State implements NetworkEvents {
 			Vector2 mouse = new Vector2(up.x, up.y);
 
 			angle = (float) (8 * Math.PI / 4 - mouse.sub(pos).angleRad());
-			int r = 20;
 			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
 
 		} else {
 			angle = (float) (Math.PI / 2);
 
-			float lerp = 0.05f;
-
-			camera.position.x += (player.getPosition().x - camera.position.x) * lerp;
-			camera.position.y += (player.getPosition().y - camera.position.y) * lerp;
-
 		}
+		float lerp = 0.05f;
 
-		playerSet.forEach(p ->
+		camera.position.x += (player.getPosition().x - camera.position.x) * lerp;
+		camera.position.y += (player.getPosition().y - camera.position.y) * lerp;
 
-		{
+		playerSet.forEach(p -> {
 			p.render(sr);
 		});
 		enemies.stream().forEach(e -> e.render(sr));
-
 		bullets.stream().forEach(b -> b.render(sr));
 
 		sr.end();
+
+		sb.begin();
+
+		GameUtils.renderTopRight("HEALTH: " + String.valueOf(player.getHealth()), sb,
+				GameUtils.generateBitmapFont(12, Color.WHITE));
+
+		sb.end();
 
 	}
 
@@ -258,21 +262,11 @@ public class PlayState extends State implements NetworkEvents {
 		m.id = player.getId();
 		myclient.getClient().sendTCP(m);
 
-		// this.getSc().setState(StateEnum.GameOverState);
-		Gdx.app.postRunnable(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				PlayState.this.getSc().setState(StateEnum.GameOverState);
-
-			}
-		});
+		this.getSc().setState(StateEnum.GameOverState);
 
 	}
 
 	public void restart() {
-		System.out.println("Game should be restarted from PLAYSTATE");
 		init();
 	}
 

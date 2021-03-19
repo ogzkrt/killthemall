@@ -120,6 +120,7 @@ public class ServerWorld implements ClientMessageObserver {
 				if (b.isVisible() && e.getBoundRect().overlaps(rb)) {
 					b.setVisible(false);
 					e.setVisible(false);
+					players.stream().filter(p -> p.getId() == b.getId()).findFirst().ifPresent(p -> p.increaseHealth());
 				}
 
 			}

@@ -3,6 +3,7 @@ package com.javakaian.network;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -34,24 +35,30 @@ public class OClient {
 			@Override
 			public void received(Connection connection, Object object) {
 
-				if (object instanceof LoginMessage) {
+				Gdx.app.postRunnable(new Runnable() {
+					public void run() {
 
-					LoginMessage newPlayer = (LoginMessage) object;
-					addNew(newPlayer.x, newPlayer.y, newPlayer.id);
+						if (object instanceof LoginMessage) {
 
-				} else if (object instanceof LogoutMessage) {
+							LoginMessage newPlayer = (LoginMessage) object;
+							addNew(newPlayer.x, newPlayer.y, newPlayer.id);
 
-					LogoutMessage pp = (LogoutMessage) object;
-					removePlayer(pp);
-				} else if (object instanceof GameWorldMessage) {
+						} else if (object instanceof LogoutMessage) {
 
-					GameWorldMessage gwm = (GameWorldMessage) object;
-					gwmReceived(gwm);
-				} else if (object instanceof PlayerDied) {
+							LogoutMessage pp = (LogoutMessage) object;
+							removePlayer(pp);
+						} else if (object instanceof GameWorldMessage) {
 
-					PlayerDied m = (PlayerDied) object;
-					playerDied(m);
-				}
+							GameWorldMessage gwm = (GameWorldMessage) object;
+							gwmReceived(gwm);
+						} else if (object instanceof PlayerDied) {
+
+							PlayerDied m = (PlayerDied) object;
+							playerDied(m);
+						}
+
+					}
+				});
 
 			}
 

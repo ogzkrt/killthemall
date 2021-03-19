@@ -39,4 +39,11 @@ public class GameUtils {
 
 	}
 
+	public static void renderTopRight(String text, SpriteBatch sb, BitmapFont font) {
+
+		GlyphLayout gl = new GlyphLayout(font, text);
+		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2 - gl.width / 2,
+				GameConstants.SCREEN_HEIGHT * 0.1f - gl.height / 2);
+	}
+
 }

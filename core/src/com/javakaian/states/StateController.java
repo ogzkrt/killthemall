@@ -28,19 +28,12 @@ public class StateController {
 			switch (stateEnum) {
 			case PlayState:
 				currentState = new PlayState(this);
-				System.out.println("CURRENT STATE IS PLAY");
 				break;
 			case GameOverState:
 				currentState = new GameOverState(this);
-				System.out.println("CURRENT STATE IS GAME OVER");
 				break;
 			case MenuState:
 				currentState = new MenuState(this);
-				System.out.println("CURRENT STATE IS MENU");
-				break;
-			case PauseState:
-				currentState = new PauseState(this);
-				System.out.println("CURRENT STATE IS POUSE ");
 				break;
 
 			default:
