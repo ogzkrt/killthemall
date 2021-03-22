@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -38,11 +39,14 @@ public class PlayState extends State implements NetworkEvents {
 
 	private OClient myclient;
 
+	private BitmapFont healthFont;
+
 	public PlayState(StateController sc) {
 		super(sc);
 
 		init();
 		ip = new PlayStateInput(this);
+		healthFont = GameUtils.generateBitmapFont(12, Color.WHITE);
 	}
 
 	private void init() {
@@ -101,8 +105,7 @@ public class PlayState extends State implements NetworkEvents {
 
 		sb.begin();
 
-		GameUtils.renderTopRight("HEALTH: " + String.valueOf(player.getHealth()), sb,
-				GameUtils.generateBitmapFont(12, Color.WHITE));
+		GameUtils.renderTopRight("HEALTH: " + String.valueOf(player.getHealth()), sb, healthFont);
 
 		sb.end();
 
