@@ -29,7 +29,7 @@ public class MenuState extends State {
 
 		sb.begin();
 		GameUtils.renderCenter("Menu", sb, bitmapFont);
-		GameUtils.renderCenter("Press Space to Contunie", sb, smallFont, 0.6f);
+		GameUtils.renderCenter("Press Space to Continue", sb, smallFont, 0.6f);
 		sb.end();
 
 	}
