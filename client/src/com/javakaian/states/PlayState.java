@@ -74,9 +74,10 @@ public class PlayState extends State implements OMessageListener {
 
 	@Override
 	public void render() {
-
 		sr.setProjectionMatrix(camera.combined);
 		camera.update();
+		if (player == null)
+			return;
 
 		ScreenUtils.clear(0, 0, 0, 1);
 
@@ -85,40 +86,41 @@ public class PlayState extends State implements OMessageListener {
 		players.forEach(p -> p.render(sr));
 		enemies.forEach(e -> e.render(sr));
 		bullets.forEach(b -> b.render(sr));
-
-		// if player is null return and end the shaperenderer.
-		if (player == null) {
-			sr.end();
-			return;
-		}
-
 		player.render(sr);
+
+		followPlayer();
+
 		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
-
 			Vector3 up = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-			Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
-			Vector2 mouse = new Vector2(up.x, up.y);
-
-			angle = (float) (8 * Math.PI / 4 - mouse.sub(pos).angleRad());
 			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
-
+			calculateAngle(up);
 		} else {
 			angle = (float) (Math.PI / 2);
-
 		}
-		float lerp = 0.05f;
-
-		camera.position.x += (player.getPosition().x - camera.position.x) * lerp;
-		camera.position.y += (player.getPosition().y - camera.position.y) * lerp;
 
 		sr.end();
 
 		sb.begin();
-
 		GameUtils.renderTopRight("HEALTH: " + String.valueOf(player.getHealth()), sb, healthFont);
-
 		sb.end();
 
+	}
+
+	private float calculateAngle(Vector3 up) {
+
+		Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
+		Vector2 mouse = new Vector2(up.x, up.y);
+		return angle = (float) (-mouse.sub(pos).angleRad());
+
+	}
+
+	/**
+	 * This function let camera to follow player smootly.
+	 */
+	private void followPlayer() {
+		float lerp = 0.05f;
+		camera.position.x += (player.getPosition().x - camera.position.x) * lerp;
+		camera.position.y += (player.getPosition().y - camera.position.y) * lerp;
 	}
 
 	@Override
@@ -138,7 +140,10 @@ public class PlayState extends State implements OMessageListener {
 		}
 	}
 
-	/***/
+	/**
+	 * This should be called when player shoot a bullet. It sends a shoot message to
+	 * the server with angle value.
+	 */
 	public void shoot() {
 
 		ShootMessage m = new ShootMessage();
@@ -178,7 +183,6 @@ public class PlayState extends State implements OMessageListener {
 	@Override
 	public void loginReceieved(LoginMessage m) {
 
-		System.out.println("LOGIN RECEIVED BY CLIENT");
 		player = new Player(m.x, m.y, 50);
 		player.setId(m.id);
 	}
@@ -209,6 +213,8 @@ public class PlayState extends State implements OMessageListener {
 
 		players = OMessageParser.getPlayersFromGWM(m);
 
+		if (player == null)
+			return;
 		// Find yourself.
 		players.stream().filter(p -> p.getId() == player.getId()).findFirst().ifPresent(p -> player = p);
 		// Remove yourself from playerlist.
