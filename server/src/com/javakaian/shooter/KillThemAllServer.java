@@ -34,7 +34,7 @@ public class KillThemAllServer extends ApplicationAdapter {
 		updateCounter++;
 		if (time >= 1) {
 			time = 0;
-			System.out.println("Update Count : " + updateCounter);
+			// System.out.println("Update Count : " + updateCounter);
 			updateCounter = 0;
 		}
 

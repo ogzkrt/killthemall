@@ -11,8 +11,8 @@ public class KillThemAll extends ApplicationAdapter {
 
 	private String inetAddress;
 
-	public KillThemAll(String ip) {
-		this.inetAddress = ip;
+	public KillThemAll(String inetAddress) {
+		this.inetAddress = inetAddress;
 	}
 
 	@Override

@@ -131,16 +131,7 @@ public class OServer {
 		this.server.getKryo().register(ShootMessage.class);
 		this.server.getKryo().register(PlayerDied.class);
 		// primitive arrays
-		this.server.getKryo().register(int[].class);
 		this.server.getKryo().register(float[].class);
-	}
-
-	public Queue<Object> getMessageQueue() {
-		return messageQueue;
-	}
-
-	public Queue<Connection> getConnectionQueue() {
-		return connectionQueue;
 	}
 
 	public void sendToAllUDP(Object m) {

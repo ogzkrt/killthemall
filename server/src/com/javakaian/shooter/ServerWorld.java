@@ -2,7 +2,6 @@ package com.javakaian.shooter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Random;
 
 import com.badlogic.gdx.math.Vector2;
@@ -17,6 +16,7 @@ import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
+import com.javakaian.util.MessageCreator;
 
 public class ServerWorld implements OMessageListener {
 
@@ -30,20 +30,17 @@ public class ServerWorld implements OMessageListener {
 
 	private float enemyTime = 0f;
 
-	private int idCounter = 0;
-
-	private Queue<Object> messageQueue;
-	private Queue<Connection> connectionQueue;
+	private LoginController loginController;
 
 	public ServerWorld() {
 
-		this.oServer = new OServer(this);
-		this.players = new ArrayList<Player>();
-		this.enemies = new ArrayList<Enemy>();
-		this.bullets = new ArrayList<Bullet>();
+		oServer = new OServer(this);
+		players = new ArrayList<Player>();
+		enemies = new ArrayList<Enemy>();
+		bullets = new ArrayList<Bullet>();
 
-		this.messageQueue = oServer.getMessageQueue();
-		this.connectionQueue = oServer.getConnectionQueue();
+		loginController = new LoginController();
+
 	}
 
 	public void update(float deltaTime) {
@@ -53,57 +50,37 @@ public class ServerWorld implements OMessageListener {
 
 		oServer.parseMessage();
 
-		GameWorldMessage gwm = new GameWorldMessage();
-
+		// update every object
 		players.forEach(p -> p.update(deltaTime));
 		enemies.forEach(e -> e.update(deltaTime));
 		bullets.forEach(b -> b.update(deltaTime));
 
+		checkCollision();
+
+		// update object list. Remove necessary
 		players.removeIf(p -> !p.isAlive());
 		enemies.removeIf(e -> !e.isVisible());
 		bullets.removeIf(b -> !b.isVisible());
 
-		int[] coordinates = new int[enemies.size() * 2];
+		spawnRandomEnemy();
 
-		for (int i = 0; i < enemies.size(); i++) {
-			coordinates[i * 2] = (int) enemies.get(i).getX();
-			coordinates[i * 2 + 1] = (int) enemies.get(i).getY();
-		}
+		GameWorldMessage m = MessageCreator.generateGWMMessage(enemies, bullets, players);
+		oServer.sendToAllUDP(m);
 
-		gwm.enemies = coordinates;
+	}
 
-		int[] pcord = new int[players.size() * 4];
-		for (int i = 0; i < players.size(); i++) {
-
-			pcord[i * 4] = (int) players.get(i).getPosition().x;
-			pcord[i * 4 + 1] = (int) players.get(i).getPosition().y;
-			pcord[i * 4 + 2] = players.get(i).getId();
-			pcord[i * 4 + 3] = players.get(i).getHealth();
-		}
-
-		gwm.players = pcord;
-
-		float[] barray = new float[bullets.size() * 3];
-		for (int i = 0; i < bullets.size(); i++) {
-			barray[i * 3] = bullets.get(i).getPosition().x;
-			barray[i * 3 + 1] = bullets.get(i).getPosition().y;
-			barray[i * 3 + 2] = bullets.get(i).getSize();
-		}
-
-		gwm.bullets = barray;
-
-		oServer.sendToAllUDP(gwm);
-
+	/**
+	 * Spawns an enemy to the random location. In 0.4 second if enemy list size is
+	 * lessthan 15.
+	 */
+	private void spawnRandomEnemy() {
 		if (enemyTime >= 0.4 && enemies.size() <= 15) {
 			enemyTime = 0;
-			if (enemies.size() % 50 == 0)
+			if (enemies.size() % 5 == 0)
 				System.out.println("Number of enemies : " + enemies.size());
 			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);
 			enemies.add(e);
 		}
-
-		checkCollision();
-
 	}
 
 	private void checkCollision() {
@@ -139,17 +116,20 @@ public class ServerWorld implements OMessageListener {
 	@Override
 	public void loginReceived(Connection con, LoginMessage m) {
 
-		players.add(new Player(m.x, m.y, 50, idCounter));
-		System.out.println("Login Message recieved from : " + idCounter);
-		m.id = idCounter;
-		idCounter++;
+		int id = loginController.getUserID();
+		players.add(new Player(m.x, m.y, 50, id));
+		System.out.println("Login Message recieved from : " + id);
+		m.id = id;
 		oServer.sendToUDP(con.getID(), m);
 	}
 
 	@Override
 	public void logoutReceived(LogoutMessage m) {
 
-		players.stream().filter(p -> p.getId() == m.id).findFirst().ifPresent(p -> players.remove(p));
+		players.stream().filter(p -> p.getId() == m.id).findFirst().ifPresent(p -> {
+			players.remove(p);
+			loginController.putUserIDBack(p.getId());
+		});
 		System.out.println("Logout Message recieved from : " + m.id + " Size: " + players.size());
 
 	}

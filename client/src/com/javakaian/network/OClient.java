@@ -87,8 +87,12 @@ public class OClient {
 		this.client.getKryo().register(ShootMessage.class);
 		this.client.getKryo().register(PlayerDied.class);
 		// primitive arrays
-		this.client.getKryo().register(int[].class);
 		this.client.getKryo().register(float[].class);
+
+	}
+
+	public void close() {
+		client.close();
 	}
 
 	public void sendTCP(Object m) {
