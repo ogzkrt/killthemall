@@ -5,6 +5,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.javakaian.states.PlayState;
 import com.javakaian.states.State.StateEnum;
 
+/**
+ * Input handles of PlayState
+ * 
+ * @author oguz
+ *
+ */
 public class PlayStateInput extends InputAdapter {
 
 	private PlayState playState;
@@ -29,11 +35,9 @@ public class PlayStateInput extends InputAdapter {
 
 		switch (keycode) {
 		case Keys.SPACE:
-			// game.resetZoom();
 			playState.shoot();
 			break;
 		case Keys.M:
-			// game.resetZoom();
 			playState.getSc().setState(StateEnum.MenuState);
 			break;
 
@@ -44,8 +48,4 @@ public class PlayStateInput extends InputAdapter {
 		return true;
 	}
 
-	@Override
-	public boolean keyUp(int keycode) {
-		return super.keyUp(keycode);
-	}
 }

@@ -7,7 +7,16 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.javakaian.shooter.input.GameOverInput;
 import com.javakaian.shooter.utils.GameUtils;
 
+/**
+ * 
+ * This class controls game over state.
+ * 
+ * @author oguz
+ *
+ */
 public class GameOverState extends State {
+
+	private BitmapFont smallFont;
 
 	public GameOverState(StateController sc) {
 		super(sc);
@@ -15,8 +24,6 @@ public class GameOverState extends State {
 		smallFont = GameUtils.generateBitmapFont(32, Color.WHITE);
 
 	}
-
-	private BitmapFont smallFont;
 
 	@Override
 	public void render() {
@@ -34,13 +41,11 @@ public class GameOverState extends State {
 
 	@Override
 	public void update(float deltaTime) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
 
 	}
 

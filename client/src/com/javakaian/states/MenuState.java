@@ -7,20 +7,26 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.javakaian.shooter.input.MenuStateInput;
 import com.javakaian.shooter.utils.GameUtils;
 
+/**
+ * 
+ * 
+ * @author oguz
+ *
+ */
 public class MenuState extends State {
 
 	private BitmapFont smallFont;
 
 	public MenuState(StateController sc) {
 		super(sc);
-
 		ip = new MenuStateInput(this);
 		smallFont = GameUtils.generateBitmapFont(32, Color.WHITE);
 	}
 
 	@Override
 	public void render() {
-		// TODO Auto-generated method stub
+
+		// bluish background.
 		float red = 50f;
 		float green = 63f;
 		float blue = 94f;
@@ -29,7 +35,8 @@ public class MenuState extends State {
 
 		sb.begin();
 		GameUtils.renderCenter("Menu", sb, bitmapFont);
-		GameUtils.renderCenter("Press Space to Continue", sb, smallFont, 0.6f);
+		GameUtils.renderCenter("Press Space to Continue", sb, smallFont, 0.5f);
+		GameUtils.renderCenter("Q to Quit", sb, smallFont, 0.6f);
 		sb.end();
 
 	}

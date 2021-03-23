@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Connection;
 import com.javakaian.network.OServer;
@@ -19,7 +18,7 @@ import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
 
-public class ServerWorld implements ClientMessageObserver {
+public class ServerWorld implements OMessageListener {
 
 	private List<Player> players;
 	private List<Enemy> enemies;
@@ -52,19 +51,16 @@ public class ServerWorld implements ClientMessageObserver {
 		this.deltaTime = deltaTime;
 		this.enemyTime += deltaTime;
 
-		parseMessage();
+		oServer.parseMessage();
 
 		GameWorldMessage gwm = new GameWorldMessage();
 
-		players.removeIf(p -> !p.isAlive());
-		players.forEach(p -> {
-			p.update(deltaTime);
-		});
-
-		enemies.stream().forEach(e -> e.update(deltaTime));
-
-		enemies.removeIf(e -> !e.isVisible());
+		players.forEach(p -> p.update(deltaTime));
+		enemies.forEach(e -> e.update(deltaTime));
 		bullets.forEach(b -> b.update(deltaTime));
+
+		players.removeIf(p -> !p.isAlive());
+		enemies.removeIf(e -> !e.isVisible());
 		bullets.removeIf(b -> !b.isVisible());
 
 		int[] coordinates = new int[enemies.size() * 2];
@@ -87,15 +83,16 @@ public class ServerWorld implements ClientMessageObserver {
 
 		gwm.players = pcord;
 
-		int[] barray = new int[bullets.size() * 2];
+		float[] barray = new float[bullets.size() * 3];
 		for (int i = 0; i < bullets.size(); i++) {
-			barray[i * 2] = (int) bullets.get(i).getPosition().x;
-			barray[i * 2 + 1] = (int) bullets.get(i).getPosition().y;
+			barray[i * 3] = bullets.get(i).getPosition().x;
+			barray[i * 3 + 1] = bullets.get(i).getPosition().y;
+			barray[i * 3 + 2] = bullets.get(i).getSize();
 		}
 
 		gwm.bullets = barray;
 
-		oServer.getServer().sendToAllUDP(gwm);
+		oServer.sendToAllUDP(gwm);
 
 		if (enemyTime >= 0.4 && enemies.size() <= 15) {
 			enemyTime = 0;
@@ -113,62 +110,26 @@ public class ServerWorld implements ClientMessageObserver {
 
 		for (Bullet b : bullets) {
 
-			Rectangle rb = new Rectangle(b.getPosition().x, b.getPosition().y, 10, 10);
-
 			for (Enemy e : enemies) {
 
-				if (b.isVisible() && e.getBoundRect().overlaps(rb)) {
+				if (b.isVisible() && e.getBoundRect().overlaps(b.getBoundRect())) {
 					b.setVisible(false);
 					e.setVisible(false);
 					players.stream().filter(p -> p.getId() == b.getId()).findFirst().ifPresent(p -> p.increaseHealth());
 				}
-
 			}
-
 			for (Player p : players) {
-				if (b.isVisible() && p.getBoundRect().overlaps(rb) && p.getId() != b.getId()) {
+				if (b.isVisible() && p.getBoundRect().overlaps(b.getBoundRect()) && p.getId() != b.getId()) {
 					b.setVisible(false);
 					p.hit();
 					if (!p.isAlive()) {
 
 						PlayerDied m = new PlayerDied();
 						m.id = p.getId();
-						oServer.getServer().sendToAllUDP(m);
+						oServer.sendToAllUDP(m);
 					}
 
 				}
-			}
-
-		}
-
-	}
-
-	private void parseMessage() {
-
-		if (connectionQueue.isEmpty() || messageQueue.isEmpty())
-			return;
-
-		for (int i = 0; i < messageQueue.size(); i++) {
-
-			Connection con = connectionQueue.poll();
-			Object message = messageQueue.poll();
-
-			if (message instanceof LoginMessage) {
-
-				LoginMessage m = (LoginMessage) message;
-				loginReceived(con, m);
-
-			} else if (message instanceof LogoutMessage) {
-				LogoutMessage m = (LogoutMessage) message;
-				logoutReceived(m);
-
-			} else if (message instanceof PositionMessage) {
-				PositionMessage m = (PositionMessage) message;
-				playerMovedReceived(m);
-
-			} else if (message instanceof ShootMessage) {
-				ShootMessage m = (ShootMessage) message;
-				shootMessageReceived(m);
 			}
 
 		}
@@ -182,7 +143,7 @@ public class ServerWorld implements ClientMessageObserver {
 		System.out.println("Login Message recieved from : " + idCounter);
 		m.id = idCounter;
 		idCounter++;
-		oServer.getServer().sendToUDP(con.getID(), m);
+		oServer.sendToUDP(con.getID(), m);
 	}
 
 	@Override
@@ -196,50 +157,27 @@ public class ServerWorld implements ClientMessageObserver {
 	@Override
 	public void playerMovedReceived(PositionMessage move) {
 
-		Player player = null;
+		players.stream().filter(p -> p.getId() == move.id).findFirst().ifPresent(p -> {
 
-		for (Player p : players) {
-			if (p.getId() == move.id)
-				player = p;
-		}
+			Vector2 v = p.getPosition();
+			switch (move.direction) {
+			case LEFT:
+				v.x -= deltaTime * 200;
+				break;
+			case RIGHT:
+				v.x += deltaTime * 200;
+				break;
+			case UP:
+				v.y -= deltaTime * 200;
+				break;
+			case DOWN:
+				v.y += deltaTime * 200;
+				break;
+			default:
+				break;
+			}
 
-		if (player == null)
-			return;
-
-		Vector2 v = player.getPosition();
-		switch (move.direction) {
-		case LEFT:
-			v.x -= deltaTime * 200;
-			break;
-		case RIGHT:
-			v.x += deltaTime * 200;
-			break;
-		case UP:
-			v.y -= deltaTime * 200;
-			break;
-		case DOWN:
-			v.y += deltaTime * 200;
-			break;
-		case UP_LEFT:
-			v.y -= deltaTime * 200;
-			v.x -= deltaTime * 200;
-			break;
-		case UP_RIGHT:
-			v.y -= deltaTime * 200;
-			v.x += deltaTime * 200;
-			break;
-		case DOWN_LEFT:
-			v.y += deltaTime * 200;
-			v.x -= deltaTime * 200;
-			break;
-		case DOWN_RIGHT:
-			v.y += deltaTime * 200;
-			v.x += deltaTime * 200;
-			break;
-
-		default:
-			break;
-		}
+		});
 
 	}
 
@@ -247,7 +185,8 @@ public class ServerWorld implements ClientMessageObserver {
 	public void shootMessageReceived(ShootMessage pp) {
 
 		players.stream().filter(p -> p.getId() == pp.id).findFirst().ifPresent(p -> {
-			bullets.add(new Bullet(p.getPosition().x + 25, p.getPosition().y + 25, 10, pp.angleDeg, pp.id));
+			bullets.add(new Bullet(p.getPosition().x + p.getBoundRect().width / 2,
+					p.getPosition().y + p.getBoundRect().height / 2, 10, pp.angleDeg, pp.id));
 		});
 
 	}

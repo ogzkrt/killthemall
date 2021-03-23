@@ -10,6 +10,20 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.javakaian.shooter.utils.GameConstants;
 import com.javakaian.shooter.utils.GameUtils;
 
+/**
+ * 
+ * This class represents the game states. Usually most of the games will have
+ * states like GameOver,Option,Menu
+ * 
+ * Each state will have their own render and update methods.Which will be called
+ * by StateController object.
+ * 
+ * Each state will have their own input
+ * processor,shaperenderer,spritebatch,camera and also font.
+ * 
+ * @author oguz
+ *
+ */
 public abstract class State {
 
 	protected OrthographicCamera camera;
@@ -39,20 +53,36 @@ public abstract class State {
 
 	}
 
+	/**
+	 * All the rendering stuff should be made inside this method. This will be
+	 * called by StateController object.
+	 */
 	public abstract void render();
 
+	/**
+	 * All the update stuff should be made inside this method. This will be called
+	 * by StateController object. Deltatime parameter can be used for measuring
+	 * time.
+	 * 
+	 * @param deltaTime Time between two consecutive frames.
+	 *
+	 */
 	public abstract void update(float deltaTime);
 
+	/**
+	 * This method will be called by StateController. Allocated resources should be
+	 * released here.
+	 */
 	public abstract void dispose();
 
+	/**
+	 * Returns the statecontroller object.
+	 */
 	public StateController getSc() {
 		return sc;
 	}
 
-	public void setSc(StateController sc) {
-		this.sc = sc;
-	}
-
+	/** Enum for each state */
 	public enum StateEnum {
 
 		PlayState, MenuState, GameOverState, PauseState

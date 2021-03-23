@@ -12,9 +12,6 @@ public class Player {
 	private int id = -1;
 	private int health;
 
-	public Player() {
-	}
-
 	public Player(float x, float y, float size) {
 		this.position = new Vector2(x, y);
 		this.size = size;

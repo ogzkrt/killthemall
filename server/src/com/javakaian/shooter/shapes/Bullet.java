@@ -1,7 +1,13 @@
 package com.javakaian.shooter.shapes;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * @author oguz
+ *
+ *
+ */
 public class Bullet {
 
 	private Vector2 position;
@@ -11,20 +17,20 @@ public class Bullet {
 
 	private float ttlCounter = 0;
 	private int id;
-
-	public Bullet() {
-	}
+	private Rectangle boundRect;
 
 	public Bullet(float x, float y, float size, float angle, int id) {
 		this.position = new Vector2(x, y);
 		this.size = size;
 		this.angle = angle;
 		this.id = id;
+
+		this.boundRect = new Rectangle(x, y, size, size);
 	}
 
 	public void update(float deltaTime) {
 
-		float speed = deltaTime * 500;
+		float speed = deltaTime * 800;
 		this.ttlCounter += deltaTime;
 
 		float dx = (float) Math.cos(angle);
@@ -36,6 +42,9 @@ public class Bullet {
 			visible = false;
 			ttlCounter = 0;
 		}
+
+		this.boundRect.x = position.x;
+		this.boundRect.y = position.y;
 	}
 
 	public Vector2 getPosition() {
@@ -64,6 +73,11 @@ public class Bullet {
 
 	public int getId() {
 		return id;
+	}
+
+	public Rectangle getBoundRect() {
+
+		return boundRect;
 	}
 
 }

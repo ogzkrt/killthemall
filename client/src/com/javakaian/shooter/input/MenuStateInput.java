@@ -5,6 +5,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.javakaian.states.MenuState;
 import com.javakaian.states.State.StateEnum;
 
+/**
+ * Input Handles of MenuState
+ * 
+ * @author oguz
+ *
+ */
 public class MenuStateInput extends InputAdapter {
 
 	private MenuState menuState;

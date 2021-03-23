@@ -10,9 +10,6 @@ public class Bullet {
 	private float angle;
 	private boolean visible = true;
 
-	public Bullet() {
-	}
-
 	public Bullet(float x, float y, float size, float angle) {
 		this.position = new Vector2(x, y);
 		this.size = size;

@@ -6,7 +6,7 @@ import com.javakaian.network.messages.LogoutMessage;
 import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.network.messages.ShootMessage;
 
-public interface ClientMessageObserver {
+public interface OMessageListener {
 
 	/**
 	 * This should be received with playerID and bullet direction

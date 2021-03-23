@@ -12,23 +12,24 @@ import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.LogoutMessage;
 import com.javakaian.network.messages.PlayerDied;
-import com.javakaian.shooter.NetworkEvents;
+import com.javakaian.network.messages.PositionMessage;
+import com.javakaian.network.messages.ShootMessage;
+import com.javakaian.shooter.OMessageListener;
 
 public class OClient {
 
 	private Client client;
-	private NetworkEvents game;
+	private OMessageListener game;
 
-	private String ip;
+	private String inetAddress;
 
-	public OClient(String ip, NetworkEvents game) {
+	public OClient(String inetAddress, OMessageListener game) {
 
 		this.game = game;
-		this.ip = ip;
+		this.inetAddress = inetAddress;
 		client = new Client();
+		registerClasses();
 		client.start();
-
-		ONetwork.register(client);
 
 		client.addListener(new ThreadedListener(new Listener() {
 
@@ -39,22 +40,20 @@ public class OClient {
 					public void run() {
 
 						if (object instanceof LoginMessage) {
-
-							LoginMessage newPlayer = (LoginMessage) object;
-							addNew(newPlayer.x, newPlayer.y, newPlayer.id);
+							LoginMessage m = (LoginMessage) object;
+							OClient.this.game.loginReceieved(m);
 
 						} else if (object instanceof LogoutMessage) {
-
-							LogoutMessage pp = (LogoutMessage) object;
-							removePlayer(pp);
+							LogoutMessage m = (LogoutMessage) object;
+							OClient.this.game.logoutReceieved(m);
 						} else if (object instanceof GameWorldMessage) {
 
-							GameWorldMessage gwm = (GameWorldMessage) object;
-							gwmReceived(gwm);
+							GameWorldMessage m = (GameWorldMessage) object;
+							OClient.this.game.gwmReceived(m);
 						} else if (object instanceof PlayerDied) {
 
 							PlayerDied m = (PlayerDied) object;
-							playerDied(m);
+							OClient.this.game.playerDiedReceived(m);
 						}
 
 					}
@@ -65,8 +64,8 @@ public class OClient {
 		}));
 
 		try {
-			System.out.println("Attempting to connect args[0]: " + ip);
-			client.connect(5000, InetAddress.getByName(ip), 1234, 1235);
+			System.out.println("Attempting to connect args[0]: " + inetAddress);
+			client.connect(5000, InetAddress.getByName(inetAddress), 1234, 1235);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -74,24 +73,30 @@ public class OClient {
 
 	}
 
-	public void playerDied(PlayerDied m) {
-		game.playerDied(m.id);
+	/**
+	 * This function register every class that will be sent back and forth between
+	 * client and server.
+	 */
+	private void registerClasses() {
+		// messages
+		this.client.getKryo().register(LoginMessage.class);
+		this.client.getKryo().register(LogoutMessage.class);
+		this.client.getKryo().register(GameWorldMessage.class);
+		this.client.getKryo().register(PositionMessage.class);
+		this.client.getKryo().register(PositionMessage.DIRECTION.class);
+		this.client.getKryo().register(ShootMessage.class);
+		this.client.getKryo().register(PlayerDied.class);
+		// primitive arrays
+		this.client.getKryo().register(int[].class);
+		this.client.getKryo().register(float[].class);
 	}
 
-	public void gwmReceived(GameWorldMessage gwm) {
-		game.gwmReceived(gwm);
+	public void sendTCP(Object m) {
+		client.sendTCP(m);
 	}
 
-	public void removePlayer(LogoutMessage pp) {
-		game.removePlayer(pp.id);
-	}
-
-	public void addNew(float x, float y, int id) {
-		game.addNewPlayer(x, y, id);
-	}
-
-	public Client getClient() {
-		return client;
+	public void sendUDP(Object m) {
+		client.sendUDP(m);
 	}
 
 }

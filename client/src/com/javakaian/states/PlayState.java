@@ -17,10 +17,11 @@ import com.javakaian.network.OClient;
 import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.LogoutMessage;
+import com.javakaian.network.messages.PlayerDied;
 import com.javakaian.network.messages.PositionMessage;
 import com.javakaian.network.messages.PositionMessage.DIRECTION;
 import com.javakaian.network.messages.ShootMessage;
-import com.javakaian.shooter.NetworkEvents;
+import com.javakaian.shooter.OMessageListener;
 import com.javakaian.shooter.input.PlayStateInput;
 import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Enemy;
@@ -28,7 +29,13 @@ import com.javakaian.shooter.shapes.Player;
 import com.javakaian.shooter.utils.GameConstants;
 import com.javakaian.shooter.utils.GameUtils;
 
-public class PlayState extends State implements NetworkEvents {
+/**
+ * This is the state where gameplay happens.
+ * 
+ * @author oguz
+ *
+ */
+public class PlayState extends State implements OMessageListener {
 
 	private Player player;
 	private List<Player> playerSet;
@@ -46,12 +53,12 @@ public class PlayState extends State implements NetworkEvents {
 
 		init();
 		ip = new PlayStateInput(this);
-		healthFont = GameUtils.generateBitmapFont(12, Color.WHITE);
+		healthFont = GameUtils.generateBitmapFont(20, Color.WHITE);
 	}
 
 	private void init() {
 
-		myclient = new OClient(sc.getIp(), this);
+		myclient = new OClient(sc.getInetAddress(), this);
 
 		player = new Player(new Random().nextInt(GameConstants.SCREEN_WIDTH),
 				new Random().nextInt(GameConstants.SCREEN_HEIGHT), 50);
@@ -59,7 +66,7 @@ public class PlayState extends State implements NetworkEvents {
 		LoginMessage m = new LoginMessage();
 		m.x = player.getPosition().x;
 		m.y = player.getPosition().y;
-		myclient.getClient().sendTCP(m);
+		myclient.sendTCP(m);
 
 		playerSet = new ArrayList<Player>();
 		enemies = new ArrayList<Enemy>();
@@ -126,30 +133,71 @@ public class PlayState extends State implements NetworkEvents {
 		}
 	}
 
+	/***/
 	public void shoot() {
 
 		ShootMessage m = new ShootMessage();
 		m.id = player.getId();
 		m.angleDeg = angle;
-		myclient.getClient().sendUDP(m);
+		myclient.sendUDP(m);
+
+	}
+
+	/**
+	 * Whenever player press a button, this creates necessary position message and
+	 * sends it to the server.
+	 */
+	private void processInputs() {
+
+		PositionMessage p = new PositionMessage();
+		p.id = player.getId();
+		if (Gdx.input.isKeyPressed(Keys.S)) {
+			p.direction = DIRECTION.DOWN;
+			myclient.sendUDP(p);
+		}
+		if (Gdx.input.isKeyPressed(Keys.W)) {
+			p.direction = DIRECTION.UP;
+			myclient.sendUDP(p);
+		}
+		if (Gdx.input.isKeyPressed(Keys.A)) {
+			p.direction = DIRECTION.LEFT;
+			myclient.sendUDP(p);
+		}
+		if (Gdx.input.isKeyPressed(Keys.D)) {
+			p.direction = DIRECTION.RIGHT;
+			myclient.sendUDP(p);
+		}
 
 	}
 
 	@Override
-	public void addNewPlayer(float x, float y, int id) {
-		this.player = new Player(x, y, 50);
-		this.player.setId(id);
+	public void loginReceieved(LoginMessage m) {
+		this.player = new Player(m.x, m.y, 50);
+		this.player.setId(m.id);
 	}
 
 	@Override
-	public void removePlayer(int id) {
+	public void logoutReceieved(LogoutMessage m) {
 
 	}
 
 	@Override
-	public void gwmReceived(GameWorldMessage gwm) {
+	public void playerDiedReceived(PlayerDied m) {
+		if (player.getId() != m.id)
+			return;
 
-		int[] temp = gwm.enemies;
+		LogoutMessage mm = new LogoutMessage();
+		mm.id = player.getId();
+		myclient.sendTCP(mm);
+
+		this.getSc().setState(StateEnum.GameOverState);
+
+	}
+
+	@Override
+	public void gwmReceived(GameWorldMessage m) {
+
+		int[] temp = m.enemies;
 
 		List<Enemy> elist = new ArrayList<Enemy>();
 		for (int i = 0; i < temp.length / 2; i++) {
@@ -164,22 +212,23 @@ public class PlayState extends State implements NetworkEvents {
 
 		this.enemies = elist;
 
-		int[] tb = gwm.bullets;
+		float[] tb = m.bullets;
 
 		List<Bullet> blist = new ArrayList<Bullet>();
-		for (int i = 0; i < tb.length / 2; i++) {
-			float x = tb[i * 2];
-			float y = tb[i * 2 + 1];
+		for (int i = 0; i < tb.length / 3; i++) {
+			float x = tb[i * 3];
+			float y = tb[i * 3 + 1];
+			float size = tb[i * 3 + 2];
 
-			Bullet b = new Bullet(x, y, 10, 0);
+			Bullet b = new Bullet(x, y, size, 0);
 
 			blist.add(b);
 		}
 		this.bullets = blist;
 
-		int[] tp = gwm.players;
+		int[] tp = m.players;
 		List<Player> plist = new ArrayList<Player>();
-		for (int i = 0; i < tp.length / 3; i++) {
+		for (int i = 0; i < tp.length / 4; i++) {
 
 			int x = tp[i * 4];
 			int y = tp[i * 4 + 1];
@@ -199,52 +248,8 @@ public class PlayState extends State implements NetworkEvents {
 		this.playerSet = plist;
 	}
 
-	private void processInputs() {
-
-		PositionMessage p = new PositionMessage();
-		p.id = player.getId();
-
-		if (Gdx.input.isKeyPressed(Keys.W) && Gdx.input.isKeyPressed(Keys.A)) {
-			p.direction = DIRECTION.UP_LEFT;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Keys.W) && Gdx.input.isKeyPressed(Keys.D)) {
-			p.direction = DIRECTION.UP_RIGHT;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Keys.S) && Gdx.input.isKeyPressed(Keys.A)) {
-			p.direction = DIRECTION.DOWN_LEFT;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Keys.S) && Gdx.input.isKeyPressed(Keys.D)) {
-			p.direction = DIRECTION.DOWN_RIGHT;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Keys.S)) {
-			p.direction = DIRECTION.DOWN;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Keys.W)) {
-			p.direction = DIRECTION.UP;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Keys.A)) {
-			p.direction = DIRECTION.LEFT;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-		if (Gdx.input.isKeyPressed(Keys.D)) {
-			p.direction = DIRECTION.RIGHT;
-			myclient.getClient().sendUDP(p);
-			return;
-		}
-
+	public void restart() {
+		init();
 	}
 
 	@Override
@@ -252,25 +257,7 @@ public class PlayState extends State implements NetworkEvents {
 
 		LogoutMessage m = new LogoutMessage();
 		m.id = player.getId();
-		myclient.getClient().sendTCP(m);
-	}
-
-	@Override
-	public void playerDied(int id) {
-
-		if (player.getId() != id)
-			return;
-
-		LogoutMessage m = new LogoutMessage();
-		m.id = player.getId();
-		myclient.getClient().sendTCP(m);
-
-		this.getSc().setState(StateEnum.GameOverState);
-
-	}
-
-	public void restart() {
-		init();
+		myclient.sendTCP(m);
 	}
 
 }

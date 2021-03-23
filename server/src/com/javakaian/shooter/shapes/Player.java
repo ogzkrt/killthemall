@@ -12,9 +12,6 @@ public class Player {
 	private boolean alive;
 	private int health;
 
-	public Player() {
-	}
-
 	public Player(float x, float y, float size, int id) {
 		this.position = new Vector2(x, y);
 		this.size = size;
