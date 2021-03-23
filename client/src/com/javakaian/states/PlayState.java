@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.javakaian.network.OClient;
 import com.javakaian.network.messages.GameWorldMessage;
@@ -23,6 +21,7 @@ import com.javakaian.network.messages.PositionMessage.DIRECTION;
 import com.javakaian.network.messages.ShootMessage;
 import com.javakaian.shooter.OMessageListener;
 import com.javakaian.shooter.input.PlayStateInput;
+import com.javakaian.shooter.shapes.AimLine;
 import com.javakaian.shooter.shapes.Bullet;
 import com.javakaian.shooter.shapes.Enemy;
 import com.javakaian.shooter.shapes.Player;
@@ -42,8 +41,7 @@ public class PlayState extends State implements OMessageListener {
 	private List<Player> players;
 	private List<Enemy> enemies;
 	private List<Bullet> bullets;
-
-	private float angle = 90;
+	private AimLine aimLine;
 
 	private OClient myclient;
 
@@ -60,10 +58,14 @@ public class PlayState extends State implements OMessageListener {
 	private void init() {
 
 		myclient = new OClient(sc.getInetAddress(), this);
+		myclient.connect();
 
 		players = new ArrayList<Player>();
 		enemies = new ArrayList<Enemy>();
 		bullets = new ArrayList<Bullet>();
+
+		aimLine = new AimLine(new Vector2(0, 0), new Vector2(0, 0));
+		aimLine.setCamera(camera);
 
 		LoginMessage m = new LoginMessage();
 		m.x = new Random().nextInt(GameConstants.SCREEN_WIDTH);
@@ -82,35 +84,17 @@ public class PlayState extends State implements OMessageListener {
 		ScreenUtils.clear(0, 0, 0, 1);
 
 		sr.begin(ShapeType.Line);
-
 		players.forEach(p -> p.render(sr));
 		enemies.forEach(e -> e.render(sr));
 		bullets.forEach(b -> b.render(sr));
 		player.render(sr);
-
+		aimLine.render(sr);
 		followPlayer();
-
-		if (Gdx.input.isButtonPressed(Buttons.LEFT)) {
-			Vector3 up = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-			sr.line(player.getPosition().x + 25, player.getPosition().y + 25, up.x, up.y);
-			calculateAngle(up);
-		} else {
-			angle = (float) (Math.PI / 2);
-		}
-
 		sr.end();
 
 		sb.begin();
 		GameUtils.renderTopRight("HEALTH: " + String.valueOf(player.getHealth()), sb, healthFont);
 		sb.end();
-
-	}
-
-	private float calculateAngle(Vector3 up) {
-
-		Vector2 pos = new Vector2(player.getPosition().x + 25, player.getPosition().y + 25);
-		Vector2 mouse = new Vector2(up.x, up.y);
-		return angle = (float) (-mouse.sub(pos).angleRad());
 
 	}
 
@@ -127,6 +111,8 @@ public class PlayState extends State implements OMessageListener {
 	public void update(float deltaTime) {
 		if (player == null)
 			return;
+		aimLine.setBegin(player.getCenter());
+		aimLine.update(deltaTime);
 		processInputs();
 	}
 
@@ -148,7 +134,7 @@ public class PlayState extends State implements OMessageListener {
 
 		ShootMessage m = new ShootMessage();
 		m.id = player.getId();
-		m.angleDeg = angle;
+		m.angleDeg = aimLine.getAngle();
 		myclient.sendUDP(m);
 
 	}

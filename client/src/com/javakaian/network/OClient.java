@@ -29,7 +29,21 @@ public class OClient {
 		this.inetAddress = inetAddress;
 		client = new Client();
 		registerClasses();
+		addListeners();
+
+	}
+
+	public void connect() {
 		client.start();
+		try {
+			System.out.println("Attempting to connect args[0]: " + inetAddress);
+			client.connect(5000, InetAddress.getByName(inetAddress), 1234, 1235);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void addListeners() {
 
 		client.addListener(new ThreadedListener(new Listener() {
 
@@ -62,15 +76,6 @@ public class OClient {
 			}
 
 		}));
-
-		try {
-			System.out.println("Attempting to connect args[0]: " + inetAddress);
-			client.connect(5000, InetAddress.getByName(inetAddress), 1234, 1235);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	/**

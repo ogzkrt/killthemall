@@ -12,10 +12,13 @@ public class Player {
 	private int id = -1;
 	private int health;
 
+	private Vector2 center;
+
 	public Player(float x, float y, float size) {
 		this.position = new Vector2(x, y);
 		this.size = size;
 		this.health = 100;
+		center = new Vector2(x, y);
 	}
 
 	public void render(ShapeRenderer sr) {
@@ -28,10 +31,16 @@ public class Player {
 		sr.begin(ShapeType.Line);
 		sr.setColor(Color.WHITE);
 
+		center.x = position.x + size / 2;
+		center.y = position.y + size / 2;
 	}
 
 	public void setPosition(Vector2 position) {
 		this.position = position;
+	}
+
+	public Vector2 getCenter() {
+		return center;
 	}
 
 	public Vector2 getPosition() {
