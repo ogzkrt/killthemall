@@ -53,7 +53,9 @@ Import the project as a gradle project in IDE of you choice then you are ready t
 
 ## Architecture
 
-This game follows Authoritative servers approach. Which means, clients sends their every move to the server, servers does the validity check and then updates their status.
+This game follows Authoritative server approach. Which means, clients sends their every move to the server, servers does the validity check and then updates their status.
+
+![diagram](https://user-images.githubusercontent.com/6486180/112293306-0e281d80-8ca3-11eb-838d-dd2b0fbad063.png)
 
 
 This games still lacks features like
