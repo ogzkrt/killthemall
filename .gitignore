@@ -5,6 +5,11 @@
 *.ear
 hs_err_pid*
 
+#new arch
+/client/build/
+/server/build/
+
+
 ## Robovm
 /ios/robovm-build/
 
