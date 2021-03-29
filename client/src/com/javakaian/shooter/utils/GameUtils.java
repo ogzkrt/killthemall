@@ -11,6 +11,12 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 
 public class GameUtils {
 
+	/**
+	 * Generates BitmapFont object with specified size and color parameters.
+	 * 
+	 * @param size  Size of the desired font
+	 * @param color Color of the desired font.
+	 **/
 	public static BitmapFont generateBitmapFont(int size, Color color) {
 
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
@@ -23,6 +29,14 @@ public class GameUtils {
 		return generator.generateFont(parameter);
 	}
 
+	/**
+	 * Renders the given string to the center of the screen. (Horizontally center
+	 * not vertically)
+	 * 
+	 * @param text String to be rendered.
+	 * @param sb   SpriteBatch object
+	 * @param font BitmapFont object
+	 */
 	public static void renderCenter(String text, SpriteBatch sb, BitmapFont font) {
 
 		GlyphLayout gl = new GlyphLayout(font, text);
@@ -31,19 +45,21 @@ public class GameUtils {
 
 	}
 
+	/**
+	 * Renders the given string to the center of the screen. (Horizontally center
+	 * not vertically). But also allows you to specify Y location of the string.
+	 * 
+	 * @param text String to be rendered.
+	 * @param sb   SpriteBatch object
+	 * @param font BitmapFont object
+	 * @param y    Y location of the text.
+	 */
 	public static void renderCenter(String text, SpriteBatch sb, BitmapFont font, float y) {
 
 		GlyphLayout gl = new GlyphLayout(font, text);
 		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2 - gl.width / 2,
 				GameConstants.SCREEN_HEIGHT * y - gl.height / 2);
 
-	}
-
-	public static void renderTopRight(String text, SpriteBatch sb, BitmapFont font) {
-
-		GlyphLayout gl = new GlyphLayout(font, text);
-		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2 - gl.width / 2,
-				GameConstants.SCREEN_HEIGHT * 0.1f - gl.height / 2);
 	}
 
 }

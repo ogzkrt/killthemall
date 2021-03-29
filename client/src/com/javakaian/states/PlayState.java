@@ -93,7 +93,7 @@ public class PlayState extends State implements OMessageListener {
 		sr.end();
 
 		sb.begin();
-		GameUtils.renderTopRight("HEALTH: " + String.valueOf(player.getHealth()), sb, healthFont);
+		GameUtils.renderCenter("HEALTH: " + String.valueOf(player.getHealth()), sb, healthFont, 0.1f);
 		sb.end();
 
 	}

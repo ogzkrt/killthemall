@@ -3,7 +3,7 @@ package com.javakaian.shooter;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 
-public class Main {
+public class ServerMain {
 
 	public static void main(String[] args) {
 
