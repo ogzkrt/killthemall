@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import com.javakaian.network.messages.GameWorldMessage;
 import com.javakaian.network.messages.LoginMessage;
 import com.javakaian.network.messages.LogoutMessage;
@@ -37,7 +36,8 @@ public class OClient {
 		client.start();
 		try {
 			System.out.println("Attempting to connect args[0]: " + inetAddress);
-			client.connect(5000, InetAddress.getByName(inetAddress), 1234, 1235);
+			client.connect(5000, InetAddress.getByName(inetAddress), 1234,
+					1235);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -45,7 +45,7 @@ public class OClient {
 
 	private void addListeners() {
 
-		client.addListener(new ThreadedListener(new Listener() {
+		client.addListener(new Listener() {
 
 			@Override
 			public void received(Connection connection, Object object) {
@@ -75,12 +75,12 @@ public class OClient {
 
 			}
 
-		}));
+		});
 	}
 
 	/**
-	 * This function register every class that will be sent back and forth between
-	 * client and server.
+	 * This function register every class that will be sent back and forth
+	 * between client and server.
 	 */
 	private void registerClasses() {
 		// messages
