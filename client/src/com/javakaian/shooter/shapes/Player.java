@@ -25,11 +25,9 @@ public class Player {
 		sr.rect(position.x, position.y, size, size);
 		sr.end();
 		sr.begin(ShapeType.Filled);
-		sr.setColor(Color.GREEN);
 		sr.rect(position.x, position.y, this.health / 2, size);
 		sr.end();
 		sr.begin(ShapeType.Line);
-		sr.setColor(Color.WHITE);
 
 		center.x = position.x + size / 2;
 		center.y = position.y + size / 2;
