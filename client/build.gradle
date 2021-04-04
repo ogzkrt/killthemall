@@ -8,3 +8,17 @@ project.ext.mainClassName = "com.javakaian.shooter.ClientMain"
 project.ext.assetDir = new File("./assets")
 
 eclipse.project.name = appName + "-client"
+
+libsDirName = '../../jars/'
+
+jar {
+
+    manifest {
+        attributes(
+                'Main-Class': 'com.javakaian.shooter.ClientMain'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+ }
