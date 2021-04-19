@@ -1,3 +1,7 @@
+![Build Workflow](https://github.com/ogzkrt/killthemall/actions/workflows/gradle.yml/badge.svg)
+
+
+
 # Table of Contents
 
 * [Game](#killthemall)
