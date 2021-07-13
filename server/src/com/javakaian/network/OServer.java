@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.log4j.Logger;
+
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -32,8 +34,8 @@ public class OServer {
 	/** Kyro server. */
 	private Server server;
 
-	private int TCP_PORT = 1234;
-	private int UDP_PORT = 1235;
+	private static final int TCP_PORT = 1234;
+	private static final int UDP_PORT = 1235;
 
 	private OMessageListener messageListener;
 
@@ -41,6 +43,8 @@ public class OServer {
 	private Queue<Object> messageQueue;
 	/** Connection queue to store connections */
 	private Queue<Connection> connectionQueue;
+
+	private Logger logger = Logger.getLogger(OServer.class);
 
 	public OServer(OMessageListener cmo) {
 
@@ -54,8 +58,8 @@ public class OServer {
 		server = new Server();
 		registerClasses();
 
-		messageQueue = new LinkedList<Object>();
-		connectionQueue = new LinkedList<Connection>();
+		messageQueue = new LinkedList<>();
+		connectionQueue = new LinkedList<>();
 
 		server.addListener(new Listener() {
 
@@ -70,7 +74,7 @@ public class OServer {
 		server.start();
 		try {
 			server.bind(TCP_PORT, UDP_PORT);
-			System.out.println("Server has ben started on TCP_PORT: " + TCP_PORT + " UDP_PORT: " + UDP_PORT);
+			logger.debug("Server has ben started on TCP_PORT: " + TCP_PORT + " UDP_PORT: " + UDP_PORT);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

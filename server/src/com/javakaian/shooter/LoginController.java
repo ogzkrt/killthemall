@@ -9,7 +9,7 @@ public class LoginController {
 
 	public LoginController() {
 
-		idSet = new LinkedList<Integer>();
+		idSet = new LinkedList<>();
 
 		// max 100 players allowed to play at the same time.
 		for (int i = 0; i < 100; i++) {

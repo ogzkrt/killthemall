@@ -9,6 +9,10 @@ import com.javakaian.shooter.shapes.Player;
 
 public class MessageCreator {
 
+	private MessageCreator() {
+
+	}
+
 	/**
 	 * Creates a GameWorldMessage. This message will be broadcasted to the all
 	 * clients over UDP.
@@ -26,7 +30,7 @@ public class MessageCreator {
 			coordinates[i * 2 + 1] = enemies.get(i).getY();
 		}
 
-		gwm.enemies = coordinates;
+		gwm.setEnemies(coordinates);
 
 		float[] pcord = new float[players.size() * 4];
 		for (int i = 0; i < players.size(); i++) {
@@ -37,7 +41,7 @@ public class MessageCreator {
 			pcord[i * 4 + 3] = players.get(i).getHealth();
 		}
 
-		gwm.players = pcord;
+		gwm.setPlayers(pcord);
 
 		float[] barray = new float[bullets.size() * 3];
 		for (int i = 0; i < bullets.size(); i++) {
@@ -45,8 +49,7 @@ public class MessageCreator {
 			barray[i * 3 + 1] = bullets.get(i).getPosition().y;
 			barray[i * 3 + 2] = bullets.get(i).getSize();
 		}
-
-		gwm.bullets = barray;
+		gwm.setBullets(barray);
 
 		return gwm;
 	}

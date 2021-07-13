@@ -8,6 +8,14 @@ package com.javakaian.network.messages;
 public class PlayerDied {
 
 	/** Player id */
-	public int id;
+	private int id;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 }

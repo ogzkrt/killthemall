@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.apache.log4j.Logger;
+
 import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Connection;
 import com.javakaian.network.OServer;
@@ -32,12 +34,14 @@ public class ServerWorld implements OMessageListener {
 
 	private LoginController loginController;
 
+	private Logger logger = Logger.getLogger(ServerWorld.class);
+
 	public ServerWorld() {
 
 		oServer = new OServer(this);
-		players = new ArrayList<Player>();
-		enemies = new ArrayList<Enemy>();
-		bullets = new ArrayList<Bullet>();
+		players = new ArrayList<>();
+		enemies = new ArrayList<>();
+		bullets = new ArrayList<>();
 
 		loginController = new LoginController();
 
@@ -77,7 +81,7 @@ public class ServerWorld implements OMessageListener {
 		if (enemyTime >= 0.4 && enemies.size() <= 15) {
 			enemyTime = 0;
 			if (enemies.size() % 5 == 0)
-				System.out.println("Number of enemies : " + enemies.size());
+				logger.debug("Number of enemies : " + enemies.size());
 			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);
 			enemies.add(e);
 		}
@@ -92,7 +96,7 @@ public class ServerWorld implements OMessageListener {
 				if (b.isVisible() && e.getBoundRect().overlaps(b.getBoundRect())) {
 					b.setVisible(false);
 					e.setVisible(false);
-					players.stream().filter(p -> p.getId() == b.getId()).findFirst().ifPresent(p -> p.increaseHealth());
+					players.stream().filter(p -> p.getId() == b.getId()).findFirst().ifPresent(Player::increaseHealth);
 				}
 			}
 			for (Player p : players) {
@@ -102,7 +106,7 @@ public class ServerWorld implements OMessageListener {
 					if (!p.isAlive()) {
 
 						PlayerDied m = new PlayerDied();
-						m.id = p.getId();
+						m.setId(p.getId());
 						oServer.sendToAllUDP(m);
 					}
 
@@ -117,30 +121,30 @@ public class ServerWorld implements OMessageListener {
 	public void loginReceived(Connection con, LoginMessage m) {
 
 		int id = loginController.getUserID();
-		players.add(new Player(m.x, m.y, 50, id));
-		System.out.println("Login Message recieved from : " + id);
-		m.id = id;
+		players.add(new Player(m.getX(), m.getY(), 50, id));
+		logger.debug("Login Message recieved from : " + id);
+		m.setId(id);
 		oServer.sendToUDP(con.getID(), m);
 	}
 
 	@Override
 	public void logoutReceived(LogoutMessage m) {
 
-		players.stream().filter(p -> p.getId() == m.id).findFirst().ifPresent(p -> {
+		players.stream().filter(p -> p.getId() == m.getId()).findFirst().ifPresent(p -> {
 			players.remove(p);
 			loginController.putUserIDBack(p.getId());
 		});
-		System.out.println("Logout Message recieved from : " + m.id + " Size: " + players.size());
+		logger.debug("Logout Message recieved from : " + m.getId() + " Size: " + players.size());
 
 	}
 
 	@Override
 	public void playerMovedReceived(PositionMessage move) {
 
-		players.stream().filter(p -> p.getId() == move.id).findFirst().ifPresent(p -> {
+		players.stream().filter(p -> p.getId() == move.getId()).findFirst().ifPresent(p -> {
 
 			Vector2 v = p.getPosition();
-			switch (move.direction) {
+			switch (move.getDirection()) {
 			case LEFT:
 				v.x -= deltaTime * 200;
 				break;
@@ -164,10 +168,9 @@ public class ServerWorld implements OMessageListener {
 	@Override
 	public void shootMessageReceived(ShootMessage pp) {
 
-		players.stream().filter(p -> p.getId() == pp.id).findFirst().ifPresent(p -> {
-			bullets.add(new Bullet(p.getPosition().x + p.getBoundRect().width / 2,
-					p.getPosition().y + p.getBoundRect().height / 2, 10, pp.angleDeg, pp.id));
-		});
+		players.stream().filter(p -> p.getId() == pp.getId()).findFirst()
+				.ifPresent(p -> bullets.add(new Bullet(p.getPosition().x + p.getBoundRect().width / 2,
+						p.getPosition().y + p.getBoundRect().height / 2, 10, pp.getAngleDeg(), pp.getId())));
 
 	}
 

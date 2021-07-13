@@ -4,14 +4,14 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Enemy {
 
-	private float x, y, size;
+	private float x;
+	private float y;
 	private boolean visible = true;
 	private Rectangle boundRect;
 
 	public Enemy(float x, float y, float size) {
 		this.x = x;
 		this.y = y;
-		this.size = size;
 		this.boundRect = new Rectangle(x, y, size, size);
 
 	}

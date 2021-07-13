@@ -65,6 +65,6 @@ project(":server") {
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         compile "com.esotericsoftware:kryonet:2.22.0-RC1"
-        
+		implementation group: 'log4j', name: 'log4j', version: '1.2.17'        
     }
 }

@@ -1,5 +1,7 @@
 package com.javakaian.shooter;
 
+import org.apache.log4j.Logger;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 
@@ -9,6 +11,8 @@ public class KillThemAllServer extends ApplicationAdapter {
 	private int updateCounter;
 
 	private ServerWorld serverWorld;
+
+	private Logger logger = Logger.getLogger(KillThemAllServer.class);
 
 	public KillThemAllServer() {
 
@@ -22,7 +26,7 @@ public class KillThemAllServer extends ApplicationAdapter {
 	@Override
 	public void create() {
 
-		System.out.println("Server is up");
+		logger.debug("Server is up");
 
 	}
 
@@ -34,7 +38,6 @@ public class KillThemAllServer extends ApplicationAdapter {
 		updateCounter++;
 		if (time >= 1) {
 			time = 0;
-			// System.out.println("Update Count : " + updateCounter);
 			updateCounter = 0;
 		}
 
@@ -43,7 +46,8 @@ public class KillThemAllServer extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-
+		// this method will be called when the server disposed. Dispose here things that
+		// you wanna.
 	}
 
 }
