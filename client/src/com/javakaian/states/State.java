@@ -35,7 +35,7 @@ public abstract class State {
 
 	protected StateController sc;
 
-	public State(StateController sc) {
+	protected State(StateController sc) {
 
 		this.sc = sc;
 
@@ -85,7 +85,7 @@ public abstract class State {
 	/** Enum for each state */
 	public enum StateEnum {
 
-		PlayState, MenuState, GameOverState, PauseState
+		PLAY_STATE, MENU_STATE, GAME_OVER_STATE, PAUSE_STATE
 
 	}
 

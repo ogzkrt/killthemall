@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Enemy {
 
-	private float x, y, size;
+	private float x;
+	private float y;
+	private float size;
 	private boolean visible = true;
 
 	public Enemy(float x, float y, float size) {

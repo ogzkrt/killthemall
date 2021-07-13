@@ -18,11 +18,14 @@ import com.javakaian.shooter.shapes.Player;
  */
 public class OMessageParser {
 
+	private OMessageParser() {
+	}
+
 	/** Returns a enemy list from gameworld message. */
 	public static List<Enemy> getEnemiesFromGWM(GameWorldMessage m) {
 
-		float[] temp = m.enemies;
-		List<Enemy> elist = new ArrayList<Enemy>();
+		float[] temp = m.getEnemies();
+		List<Enemy> elist = new ArrayList<>();
 		for (int i = 0; i < temp.length / 2; i++) {
 
 			float x = temp[i * 2];
@@ -43,8 +46,8 @@ public class OMessageParser {
 	 */
 	public static List<Player> getPlayersFromGWM(GameWorldMessage m) {
 
-		float[] tp = m.players;
-		List<Player> plist = new ArrayList<Player>();
+		float[] tp = m.getPlayers();
+		List<Player> plist = new ArrayList<>();
 		for (int i = 0; i < tp.length / 4; i++) {
 
 			float x = tp[i * 4];
@@ -65,15 +68,15 @@ public class OMessageParser {
 	/** Returns a bullet list from gameworld message. */
 	public static List<Bullet> getBulletsFromGWM(GameWorldMessage m) {
 
-		float[] tb = m.bullets;
+		float[] tb = m.getBullets();
 
-		List<Bullet> blist = new ArrayList<Bullet>();
+		List<Bullet> blist = new ArrayList<>();
 		for (int i = 0; i < tb.length / 3; i++) {
 			float x = tb[i * 3];
 			float y = tb[i * 3 + 1];
 			float size = tb[i * 3 + 2];
 
-			Bullet b = new Bullet(x, y, size, 0);
+			Bullet b = new Bullet(x, y, size);
 
 			blist.add(b);
 		}

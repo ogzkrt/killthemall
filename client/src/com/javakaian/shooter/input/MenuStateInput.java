@@ -24,7 +24,7 @@ public class MenuStateInput extends InputAdapter {
 
 		switch (keycode) {
 		case Keys.SPACE:
-			menuState.getSc().setState(StateEnum.PlayState);
+			menuState.getSc().setState(StateEnum.PLAY_STATE);
 			break;
 		case Keys.Q:
 			menuState.quit();

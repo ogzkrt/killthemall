@@ -30,7 +30,7 @@ public class StateController {
 	public StateController(String ip) {
 
 		this.inetAddress = ip;
-		stateMap = new HashMap<Integer, State>();
+		stateMap = new HashMap<>();
 
 	}
 
@@ -45,22 +45,24 @@ public class StateController {
 		currentState = stateMap.get(stateEnum.ordinal());
 		if (currentState == null) {
 			switch (stateEnum) {
-			case PlayState:
+			case PLAY_STATE:
 				currentState = new PlayState(this);
 				break;
-			case GameOverState:
+			case GAME_OVER_STATE:
 				currentState = new GameOverState(this);
 				break;
-			case MenuState:
+			case MENU_STATE:
 				currentState = new MenuState(this);
 				break;
 
 			default:
+				currentState = new MenuState(this);
 				break;
 			}
 			stateMap.put(stateEnum.ordinal(), currentState);
 		}
 		Gdx.input.setInputProcessor(currentState.ip);
+
 	}
 
 	/**
@@ -82,9 +84,7 @@ public class StateController {
 	 * Calls the dispose method of each state in the hashmap.
 	 */
 	public void dispose() {
-		stateMap.forEach((k, v) -> {
-			v.dispose();
-		});
+		stateMap.forEach((k, v) -> v.dispose());
 	}
 
 	/**

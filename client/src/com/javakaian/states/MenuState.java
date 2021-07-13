@@ -43,7 +43,7 @@ public class MenuState extends State {
 
 	@Override
 	public void update(float deltaTime) {
-		// TODO Auto-generated method stub
+		// do updates here.
 
 	}
 
@@ -53,12 +53,12 @@ public class MenuState extends State {
 
 	@Override
 	public void dispose() {
-
+		// do disposes here.
 	}
 
 	public void restart() {
 
-		PlayState playState = (PlayState) this.sc.getStateMap().get(StateEnum.PlayState.ordinal());
+		PlayState playState = (PlayState) this.sc.getStateMap().get(StateEnum.PLAY_STATE.ordinal());
 		playState.restart();
 
 	}

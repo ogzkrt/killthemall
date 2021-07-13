@@ -7,13 +7,11 @@ public class Bullet {
 
 	private Vector2 position;
 	private float size;
-	private float angle;
 	private boolean visible = true;
 
-	public Bullet(float x, float y, float size, float angle) {
+	public Bullet(float x, float y, float size) {
 		this.position = new Vector2(x, y);
 		this.size = size;
-		this.angle = angle;
 	}
 
 	public void render(ShapeRenderer sr) {

@@ -3,6 +3,8 @@ package com.javakaian.network;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.apache.log4j.Logger;
+
 import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
@@ -22,6 +24,8 @@ public class OClient {
 
 	private String inetAddress;
 
+	private Logger logger = Logger.getLogger(OClient.class);
+
 	public OClient(String inetAddress, OMessageListener game) {
 
 		this.game = game;
@@ -35,9 +39,8 @@ public class OClient {
 	public void connect() {
 		client.start();
 		try {
-			System.out.println("Attempting to connect args[0]: " + inetAddress);
-			client.connect(5000, InetAddress.getByName(inetAddress), 1234,
-					1235);
+			logger.debug("Attempting to connect args[0]: " + inetAddress);
+			client.connect(5000, InetAddress.getByName(inetAddress), 1234, 1235);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,27 +53,25 @@ public class OClient {
 			@Override
 			public void received(Connection connection, Object object) {
 
-				Gdx.app.postRunnable(new Runnable() {
-					public void run() {
+				Gdx.app.postRunnable(() -> {
 
-						if (object instanceof LoginMessage) {
-							LoginMessage m = (LoginMessage) object;
-							OClient.this.game.loginReceieved(m);
+					if (object instanceof LoginMessage) {
+						LoginMessage m = (LoginMessage) object;
+						OClient.this.game.loginReceieved(m);
 
-						} else if (object instanceof LogoutMessage) {
-							LogoutMessage m = (LogoutMessage) object;
-							OClient.this.game.logoutReceieved(m);
-						} else if (object instanceof GameWorldMessage) {
+					} else if (object instanceof LogoutMessage) {
+						LogoutMessage m = (LogoutMessage) object;
+						OClient.this.game.logoutReceieved(m);
+					} else if (object instanceof GameWorldMessage) {
 
-							GameWorldMessage m = (GameWorldMessage) object;
-							OClient.this.game.gwmReceived(m);
-						} else if (object instanceof PlayerDied) {
+						GameWorldMessage m = (GameWorldMessage) object;
+						OClient.this.game.gwmReceived(m);
+					} else if (object instanceof PlayerDied) {
 
-							PlayerDied m = (PlayerDied) object;
-							OClient.this.game.playerDiedReceived(m);
-						}
-
+						PlayerDied m = (PlayerDied) object;
+						OClient.this.game.playerDiedReceived(m);
 					}
+
 				});
 
 			}
@@ -79,8 +80,8 @@ public class OClient {
 	}
 
 	/**
-	 * This function register every class that will be sent back and forth
-	 * between client and server.
+	 * This function register every class that will be sent back and forth between
+	 * client and server.
 	 */
 	private void registerClasses() {
 		// messages

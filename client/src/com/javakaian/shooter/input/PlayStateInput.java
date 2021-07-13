@@ -38,7 +38,7 @@ public class PlayStateInput extends InputAdapter {
 			playState.shoot();
 			break;
 		case Keys.M:
-			playState.getSc().setState(StateEnum.MenuState);
+			playState.getSc().setState(StateEnum.MENU_STATE);
 			break;
 
 		default:

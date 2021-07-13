@@ -11,6 +11,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFont
 
 public class GameUtils {
 
+	private GameUtils() {
+
+	}
+
 	/**
 	 * Generates BitmapFont object with specified size and color parameters.
 	 * 
@@ -40,7 +44,7 @@ public class GameUtils {
 	public static void renderCenter(String text, SpriteBatch sb, BitmapFont font) {
 
 		GlyphLayout gl = new GlyphLayout(font, text);
-		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2 - gl.width / 2,
+		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2.0f - gl.width / 2.0f,
 				GameConstants.SCREEN_HEIGHT * 0.3f - gl.height / 2);
 
 	}
@@ -57,7 +61,7 @@ public class GameUtils {
 	public static void renderCenter(String text, SpriteBatch sb, BitmapFont font, float y) {
 
 		GlyphLayout gl = new GlyphLayout(font, text);
-		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2 - gl.width / 2,
+		font.draw(sb, text, GameConstants.SCREEN_WIDTH / 2.0f - gl.width / 2.0f,
 				GameConstants.SCREEN_HEIGHT * y - gl.height / 2);
 
 	}

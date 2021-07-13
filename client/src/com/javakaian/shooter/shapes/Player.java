@@ -1,6 +1,5 @@
 package com.javakaian.shooter.shapes;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
@@ -25,7 +24,7 @@ public class Player {
 		sr.rect(position.x, position.y, size, size);
 		sr.end();
 		sr.begin(ShapeType.Filled);
-		sr.rect(position.x, position.y, this.health / 2, size);
+		sr.rect(position.x, position.y, this.health / 2.0f, size);
 		sr.end();
 		sr.begin(ShapeType.Line);
 

@@ -1,10 +1,15 @@
 package com.javakaian.shooter;
 
+import org.apache.log4j.Logger;
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.javakaian.shooter.utils.GameConstants;
 
 public class ClientMain {
+
+	private static Logger logger = Logger.getLogger(ClientMain.class);
+
 	public static void main(String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = GameConstants.SCREEN_WIDTH;
@@ -16,7 +21,7 @@ public class ClientMain {
 
 		String ip = null;
 		if (arg.length == 0) {
-			System.out.println("No arg has been passed. LOCALHOST ip.");
+			logger.debug("No arg has been passed. LOCALHOST ip.");
 			ip = "localhost";
 		} else {
 			ip = arg[0];

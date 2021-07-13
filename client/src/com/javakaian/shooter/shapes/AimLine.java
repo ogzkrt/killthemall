@@ -10,7 +10,8 @@ import com.badlogic.gdx.math.Vector3;
 
 public class AimLine {
 
-	private Vector2 begin, end;
+	private Vector2 begin;
+	private Vector2 end;
 
 	private OrthographicCamera camera;
 
@@ -36,7 +37,7 @@ public class AimLine {
 			end.x = up.x;
 			end.y = up.y;
 
-			angle = calculateAngle(up);
+			angle = calculateAngle();
 
 		} else {
 			end = begin;
@@ -45,11 +46,11 @@ public class AimLine {
 
 	}
 
-	private float calculateAngle(Vector3 up) {
+	private float calculateAngle() {
 
 		Vector2 pos = new Vector2(begin.x, begin.y);
 		Vector2 mouse = new Vector2(end.x, end.y);
-		return (float) (-mouse.sub(pos).angleRad());
+		return -mouse.sub(pos).angleRad();
 
 	}
 

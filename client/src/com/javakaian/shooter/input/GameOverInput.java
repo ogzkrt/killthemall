@@ -22,15 +22,10 @@ public class GameOverInput extends InputAdapter {
 	@Override
 	public boolean keyDown(int keycode) {
 
-		switch (keycode) {
-
-		case Keys.R:
+		if (keycode == Keys.R) {
 			gameOver.restart();
-			gameOver.getSc().setState(StateEnum.PlayState);
-			break;
+			gameOver.getSc().setState(StateEnum.PLAY_STATE);
 
-		default:
-			break;
 		}
 
 		return true;

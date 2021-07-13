@@ -19,7 +19,7 @@ public class KillThemAll extends ApplicationAdapter {
 	public void create() {
 
 		sc = new StateController(inetAddress);
-		sc.setState(StateEnum.MenuState);
+		sc.setState(StateEnum.MENU_STATE);
 
 	}
 
