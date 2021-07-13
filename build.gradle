@@ -35,17 +35,6 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
-    
-    
-    plugins {
-	  id "org.sonarqube" version "3.3"
-	}
-
-	sonarqube {
-	  properties {
-	    property "sonar.projectKey", "asdasd"
-	  }
-	}
 }
 
 project(":client") {
