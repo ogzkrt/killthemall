@@ -1,8 +1,8 @@
 package com.javakaian.states;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -68,8 +68,8 @@ public class PlayState extends State implements OMessageListener {
 		aimLine.setCamera(camera);
 
 		LoginMessage m = new LoginMessage();
-		m.setX(new Random().nextInt(GameConstants.SCREEN_WIDTH));
-		m.setY(new Random().nextInt(GameConstants.SCREEN_HEIGHT));
+		m.setX(new SecureRandom().nextInt(GameConstants.SCREEN_WIDTH));
+		m.setY(new SecureRandom().nextInt(GameConstants.SCREEN_HEIGHT));
 		myclient.sendTCP(m);
 
 	}

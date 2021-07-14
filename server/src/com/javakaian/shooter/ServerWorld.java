@@ -1,8 +1,8 @@
 package com.javakaian.shooter;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -82,7 +82,7 @@ public class ServerWorld implements OMessageListener {
 			enemyTime = 0;
 			if (enemies.size() % 5 == 0)
 				logger.debug("Number of enemies : " + enemies.size());
-			Enemy e = new Enemy(new Random().nextInt(1000), new Random().nextInt(1000), 10);
+			Enemy e = new Enemy(new SecureRandom().nextInt(1000), new SecureRandom().nextInt(1000), 10);
 			enemies.add(e);
 		}
 	}
