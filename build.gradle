@@ -14,6 +14,20 @@ buildscript {
     }
 }
 
+
+plugins {
+  id "org.sonarqube" version "3.3"
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "ogzkrt_killthemall"
+    property "sonar.organization", "ogzkrt"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
+
+
 allprojects {
     apply plugin: "eclipse"
 
