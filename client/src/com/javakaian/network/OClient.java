@@ -3,6 +3,7 @@ package com.javakaian.network;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.badlogic.gdx.Gdx;
@@ -42,7 +43,7 @@ public class OClient {
 			logger.debug("Attempting to connect args[0]: " + inetAddress);
 			client.connect(5000, InetAddress.getByName(inetAddress), 1234, 1235);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.log(Level.ALL, e);
 		}
 	}
 

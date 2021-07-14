@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -76,7 +77,7 @@ public class OServer {
 			server.bind(TCP_PORT, UDP_PORT);
 			logger.debug("Server has ben started on TCP_PORT: " + TCP_PORT + " UDP_PORT: " + UDP_PORT);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.log(Level.ALL, e);
 		}
 
 	}
